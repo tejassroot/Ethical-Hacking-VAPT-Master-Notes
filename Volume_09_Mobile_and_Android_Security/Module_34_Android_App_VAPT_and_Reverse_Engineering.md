@@ -19,6 +19,7 @@ By completing this module, mobile penetration testers, reverse engineers, and ap
 ## 2. Prerequisites & Operational Requirements
 
 To successfully master the concepts and practical exercises in this module, engineers require:
+* **Mobile & Android Zero-Knowledge Foundations**: Fundamental smartphone hardware architecture, APK ZIP layout, Dalvik/ART compilation, Android components, manifest structure, and ADB syntax ([Zero-Knowledge Android Foundations Primer](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_09_Mobile_and_Android_Security/Zero_Knowledge_Android_and_Mobile_Application_Foundations.md)).
 * **Android OS Foundations**: Deep understanding of the Android platform stack, UIDs, and IPC boundaries ([Module 17](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_09_Mobile_and_Android_Security/Module_17_Mobile_Security_Foundations.md)).
 * **Interception Proxies**: Operational proficiency with Burp Suite Professional and local proxy configurations ([Module 29](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_29_Web_Application_Security_Tools.md)).
 * **Tooling Setup**: Kali Linux workstation with `apktool`, `jadx-gui`, `frida-tools`, `apksigner`, `zipalign`, and a rooted Android emulator (Genymotion, Android Studio AVD running Android 11+ with Google APIs).
