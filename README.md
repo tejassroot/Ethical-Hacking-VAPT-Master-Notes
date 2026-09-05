@@ -74,6 +74,50 @@ Ethical_Hacking_VAPT_Master_Notes/
 
 ---
 
+## Standalone Practical Lab Ecosystem (1-to-1 Module Parity)
+
+Every primary module (Modules 01–34) is paired with a dedicated, zero-dependency, automated Python or Bash lab script in the [`labs/`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs) directory. All 34 lab suites feature built-in deterministic self-tests that run offline with exit code 0:
+
+| Module | Lab Script Path | Focus Area & Capabilities |
+| :--- | :--- | :--- |
+| **01** | [`labs/module_01/hardware_os_security_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_01/hardware_os_security_auditor.py) | CPU microarchitecture flags (NX/DEP, SMEP, SMAP, KPTI) & Linux ASLR randomization verification. |
+| **02** | [`labs/module_02/secure_sdlc_threat_modeler.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_02/secure_sdlc_threat_modeler.py) | STRIDE threat modeling, DREAD risk scoring matrix & SAST source-to-sink taint analysis engine. |
+| **03** | [`labs/module_03/scope_enforcement_guard.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_03/scope_enforcement_guard.py) | Scoping guardrails, CIDR boundary validation & out-of-scope target containment. |
+| **04** | [`labs/module_04/virtual_lab_topology_checker.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_04/virtual_lab_topology_checker.py) | Multi-NIC pivot topologies, RFC 1918 compliance & Docker container escape privilege auditing. |
+| **05** | [`labs/module_05/linux_security_audit.sh`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_05/linux_security_audit.sh) | Linux kernel, SUID/SGID auditing, world-writable file detection & privilege escalation vectors. |
+| **06** | [`labs/module_06/osint_footprint_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_06/osint_footprint_engine.py) | Passive OSINT footprinting, Certificate Transparency mining, SPF/DMARC records & WHOIS parsing. |
+| **07** | [`labs/module_07/service_enumeration_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_07/service_enumeration_auditor.py) | Service enumeration, banner grabbing, SMB dialect negotiation & RPC port mapping parser. |
+| **08** | [`labs/module_08/network_packet_dissector.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_08/network_packet_dissector.py) | Raw socket IPv4, TCP (3-way handshake flags) & UDP header dissector with checksum verification. |
+| **09** | [`labs/module_09/anonymity_leak_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_09/anonymity_leak_auditor.py) | Tor circuit integrity, DNS leak detection, WebRTC STUN candidate parsing & IPv6 leakage auditing. |
+| **10** | [`labs/module_10/credential_security_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_10/credential_security_auditor.py) | KDF work factor benchmarking (PBKDF2/Argon2/bcrypt), Shannon entropy & password policy auditor. |
+| **11** | [`labs/module_11/layer2_security_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_11/layer2_security_auditor.py) | ARP spoofing detection, Dynamic ARP Inspection (DAI) state engine & MAC table exhaustion defense. |
+| **12** | [`labs/module_12/human_risk_evaluator.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_12/human_risk_evaluator.py) | Psychometric pretext lure analyzer, Cialdini persuasion heuristic scoring & phishing simulation metrics. |
+| **13** | [`labs/module_13/wireless_security_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_13/wireless_security_auditor.py) | 802.11 frame parser, WPA2 4-way handshake PMK/PTK synthesizer, PMKID extractor & 802.11w auditor. |
+| **14** | [`labs/module_14/host_defense_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_14/host_defense_auditor.py) | CWE-428 unquoted service paths, Windows Run/RunOnce ASEP registry keys & Sysmon event parser. |
+| **15** | [`labs/module_15/phishing_analysis_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_15/phishing_analysis_engine.py) | RFC 5321/5322 header alignment, SPF DNS lookup tree, DKIM verification & AiTM reverse proxy detector. |
+| **16** | [`labs/module_16/malware_analysis_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_16/malware_analysis_engine.py) | Portable Executable (PE) / ELF section entropy, import hash (imphash) calculator & YARA rule engine. |
+| **17** | [`labs/module_17/android_storage_and_manifest_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_17/android_storage_and_manifest_auditor.py) | AndroidManifest.xml parser (exported components, debuggable flags) & SQLite storage auditor. |
+| **18** | [`labs/module_18/siem_detection_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_18/siem_detection_engine.py) | Sigma detection rule parser, Splunk/Elasticsearch query translator & risk-based alerting (RBA). |
+| **19** | [`labs/module_19/audit_email_headers.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_19/audit_email_headers.py) | Chronological 'Received:' hop parser, spoofed boundary detection & DMARC forensic analyzer. |
+| **20** | [`labs/module_20/dos_mitigation_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_20/dos_mitigation_engine.py) | UDP amplification factor, RFC 4987 SYN cookies, ReDoS polynomial time check & Token Bucket limiter. |
+| **21** | [`labs/module_21/cors_header_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_21/cors_header_auditor.py) | Same-Origin Policy (SOP), CORS misconfigurations (null origin, credential reflection) & security headers. |
+| **22** | [`labs/module_22/audit_iot_firmware.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_22/audit_iot_firmware.py) | Binwalk header signature detection, SquashFS entropy analysis & hardcoded credential scanner. |
+| **23** | [`labs/module_23/stego_forensics_lab.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_23/stego_forensics_lab.py) | 24-bit BMP & PNG Least Significant Bit (LSB) steganography injector, extractor & Chi-Square detector. |
+| **24** | [`labs/module_24/pki_crypto_audit.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_24/pki_crypto_audit.py) | Cryptographic cipher suite auditor, RSA/ECC key generator, X.509 certificate chain verifier & CRL check. |
+| **25** | [`labs/module_25/evidence_custody_verifier.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_25/evidence_custody_verifier.py) | Cryptographic chain-of-custody ledger with SHA-256 block-hashing and tamper verification. |
+| **26** | [`labs/module_26/evidence_chain_of_custody_sealer.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_26/evidence_chain_of_custody_sealer.py) | Dual-hash (SHA-256 + SHA-512) digital evidence sealing tool conforming to ISO/IEC 27037 standards. |
+| **27** | [`labs/module_27/network_containment_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_27/network_containment_auditor.py) | Multi-subnet boundary validation, routing table inspector & unauthorized egress containment auditor. |
+| **28** | [`labs/module_28/web_surface_mapper.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_28/web_surface_mapper.py) | HTML/DOM parser, technology stack fingerprinting engine & JavaScript API endpoint discovery parser. |
+| **29** | [`labs/module_29/fuzz_and_proxy_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_29/fuzz_and_proxy_engine.py) | Multi-threaded HTTP fuzzing engine, wordlist mutation, path fuzzing & Burp upstream proxy adapter. |
+| **30** | [`labs/module_30/owasp_top10_lab.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_30/owasp_top10_lab.py) | OWASP Top 10 vulnerability lab: SQLi, XSS, IDOR, SSRF, SSTI, Mass Assignment & Secure Patches. |
+| **31** | [`labs/module_31/vapt_report_and_cvss_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_31/vapt_report_and_cvss_engine.py) | CVSS v3.1 and v4.0 vector scoring calculator & structured executive/technical Markdown report generator. |
+| **32** | [`labs/module_32/service_audit_and_pivot_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_32/service_audit_and_pivot_engine.py) | Network pivot simulation, SMB signing auditor, anonymous FTP scanner & relay boundary verification. |
+| **33** | [`labs/module_33/api_security_testing_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_33/api_security_testing_engine.py) | JWT algorithm confusion ('none' alg), API Mass Assignment & GraphQL nested query depth auditor. |
+| **34** | [`labs/module_34/apk_reversing_and_frida_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_34/apk_reversing_and_frida_engine.py) | Smali bytecode inverter, hardcoded API secret scanner & dynamic Frida JavaScript hook synthesizer. |
+```
+
+---
+
 ## 20-Point Topic Schema Mandate
 
 Each primary module in this curriculum conforms strictly to the following 20-point analytical structure:
