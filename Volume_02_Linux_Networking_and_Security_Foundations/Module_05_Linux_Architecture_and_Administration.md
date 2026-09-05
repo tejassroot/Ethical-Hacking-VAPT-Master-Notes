@@ -20,6 +20,7 @@ By completing this module, security practitioners, systems engineers, and penetr
 
 Before starting this module, students should understand:
 * **Operating System Primitives**: CPU execution rings, page-based virtual memory, and process lifecycle states (covered in [Module 01](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md)).
+* **OS Lineage & Command-Line Foundations**: Unix/Linux historical evolution, FHS directory tree taxonomy, and Top 50 essential Linux commands (covered in [Windows & Linux OS Foundations, Directory Structures & Command Mastery](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_01_Computer_and_Programming_Foundations/Windows_and_Linux_OS_Foundations_and_Command_Mastery.md)).
 * **Basic Command-Line Proficiency**: Navigation (`cd`, `ls`), file inspection (`cat`, `less`), and basic standard input/output redirection (`|`, `>`, `<`).
 
 ---

@@ -26,7 +26,7 @@ Engineered for security researchers, penetration testers, blue team defense engi
   - [Volume 09: Mobile & Android Security](#volume-09-mobile--android-security)
   - [Volume 10: Advanced Security Disciplines](#volume-10-advanced-security-disciplines)
   - [Volume 11: Reporting Methodology & Professional Practice](#volume-11-reporting-methodology--professional-practice)
-  - [Volume 12: Reference Material, Checklists & Blueprints](#volume-12-reference-material-checklists--blueprints)
+  - [Volume 12: Career Roadmap, Checklists & Reference Material](#volume-12-career-roadmap-checklists--reference-material)
 - [The 20-Point Topic Schema Mandate](#the-20-point-topic-schema-mandate)
 - [Frameworks & Standards Compliance](#frameworks--standards-compliance)
 - [Operational Security & Responsible Testing](#operational-security--responsible-testing)
@@ -50,6 +50,7 @@ The master notes library spans 12 structured volumes covering every operational 
 
 ### Volume 01: Computer & Programming Foundations
 - [Special Primer: Computer Science & Systems Foundations from Absolute Zero](./Volume_01_Computer_and_Programming_Foundations/Zero_Knowledge_Computer_Foundations_Master_Guide.md) — First-principles guide for absolute beginners: bits, bytes, binary/hex, CPU/RAM/SSD hardware anatomy, OS boot lifecycle, terminal survival guide, magic bytes, postal networking model, and core security definitions.
+- [Windows & Linux OS Foundations, Directory Structures & Command Mastery](./Volume_01_Computer_and_Programming_Foundations/Windows_and_Linux_OS_Foundations_and_Command_Mastery.md) — Comprehensive comparative OS lineage (Unix/Linux & DOS/Windows NT), monolithic vs hybrid kernel architectures, FHS and Windows directory hierarchies, Top 50 Linux commands, Top 50 Windows commands (CMD & PowerShell), and dual-platform Rosetta Stone.
 - [Module 01: Computer Hardware, OS Architecture & Productivity Systems](./Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md) — CPU microarchitectures, memory hierarchy, system calls, OS kernel/user-space mechanics, stack layout, 6-stage buffer overflow, and malicious document macro structures.
 - [Module 02: Advanced Programming, Fullstack Architecture & Secure SDLC](./Volume_01_Computer_and_Programming_Foundations/Module_02_Advanced_Programming_and_Secure_Development.md) — Multi-tier software architecture, secure SDLC integration, STRIDE threat modeling, SAST taint-flow analysis, CI/CD pipeline security, Poisoned Pipeline Execution (PPE), GitHub Actions `pull_request_target` RCE, dependency confusion, and SLSA/SBOM provenance.
 
@@ -85,6 +86,7 @@ The master notes library spans 12 structured volumes covering every operational 
 - [Module 32: Network Penetration Testing Execution & Host Auditing](./Volume_07_Network_Penetration_Testing/Module_32_Network_Penetration_Testing_Execution.md) — Active Directory architecture, Kerberos authentication dance, the "Big 6" AD attacks, BloodHound graph analysis, ADCS (ESC1–ESC8) & Shadow Credentials, Linux/Windows privilege escalation frameworks, Kubernetes cluster pentesting, and container breakout vectors.
 
 ### Volume 08: API Security
+- [API Architectures, Protocols & Types Master Guide](./Volume_08_API_Security/API_Architectures_and_Types_Master_Guide.md) — Comprehensive architectural analysis of System APIs vs Web APIs, REST, SOAP (WSDL/XXE), GraphQL (Introspection/DoS), gRPC (Protobuf/mTLS), WebSockets (CSWSH), Webhooks (HMAC verification), RPC (JSON-RPC/XML-RPC), and master 10-dimension comparison matrix.
 - [Module 33: API Security Testing, Microservices & Modern Web Architectures](./Volume_08_API_Security/Module_33_API_Testing_and_Microservice_Security.md) — REST, GraphQL, gRPC, OAuth2/OIDC, BOLA, Mass Assignment, JWT algorithm manipulation, and AI & LLM Application Security (OWASP Top 10 for LLMs 2025, Prompt Injection, RAG Poisoning, and Agentic Tool Security).
 
 ### Volume 09: Mobile & Android Security
