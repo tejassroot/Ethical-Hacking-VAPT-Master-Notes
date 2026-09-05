@@ -19,7 +19,8 @@ By completing this module, security practitioners, penetration testers, and lega
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **IP Addressing & CIDR Routing**: Subnet masks, network prefixes, and loopback ranges (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Cyber Threat Frameworks**: The 7-phase Cyber Kill Chain, MITRE ATT&CK Matrix across 14 enterprise tactics, and the Pyramid of Pain ([Cyber Threat Frameworks Master Guide](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_04_Core_Ethical_Hacking/Cyber_Kill_Chain_and_MITRE_ATTCK_Master_Guide.md)).
+* **IP Addressing & CIDR Routing**: Subnet masks, network prefixes, and loopback ranges (covered in [Networking Foundations & Subnetting Master Guide](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md) and [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
 * **Basic Network Topology**: Demilitarized Zones (DMZs), internal corporate enclaves, and cloud hosting perimeters.
 
 ---
