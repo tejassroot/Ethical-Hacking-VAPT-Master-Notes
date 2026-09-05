@@ -126,7 +126,113 @@ Linux is a monolithic kernel where drivers, scheduling, virtual filesystems, and
 
 ---
 
-### 4.3 Filesystem Architectures
+### 4.3 Process Memory Layout & Stack-Based Buffer Overflow Fundamentals
+
+Understanding how an operating system structures process memory and how CPU instruction pointers navigate execution frames is the foundational cornerstone of binary exploitation and memory safety analysis.
+
+#### The Process Virtual Memory Map
+
+When an operating system executes an executable file, the OS loader creates an isolated virtual address space divided into standardized logical segments:
+
+```
++-------------------------------------------------------------+ 0xFFFFFFFF (32-bit) / 0x7FFFFFFFFFFF (64-bit)
+| KERNEL SPACE (Restricted Ring 0 Memory)                    |
++-------------------------------------------------------------+ High Memory
+| STACK (Grows Downward  | )                                  |
+|   - Function frames, local variables, return addresses (EIP)|
+|                                                             |
+|   v  [ Stack Pointer (ESP/RSP) moves toward low memory ]   |
+|                                                             |
+|   ^  [ Heap Pointer moves toward high memory ]              |
+|                                                             |
+| HEAP (Grows Upward  ^ )                                     |
+|   - Dynamic memory allocated via malloc(), calloc(), new    |
++-------------------------------------------------------------+
+| BSS SEGMENT (Uninitialized global and static variables)     |
++-------------------------------------------------------------+
+| DATA SEGMENT (Initialized global and static variables)      |
++-------------------------------------------------------------+
+| TEXT / CODE SEGMENT (Read-Only machine instructions)        |
++-------------------------------------------------------------+ 0x00000000 (Low Memory)
+```
+
+#### Anatomy of a Stack Call Frame
+
+The call stack operates as a Last-In, First-Out (LIFO) data structure. When a program invokes a function:
+1. The caller pushes arguments onto the stack.
+2. The `CALL` instruction pushes the address of the next sequential instruction onto the stack—this is the **Saved Return Address (Saved EIP/RIP)**.
+3. The called function executes the **Function Prologue**:
+   ```nasm
+   push ebp          ; Save the caller's base pointer
+   mov  ebp, esp     ; Establish the current stack pointer as the new base pointer
+   sub  esp, 0x40    ; Allocate 64 bytes for local function variables
+   ```
+4. A stack frame is established in memory:
+
+```
++─────────────────────────────────────────────────────────────+ Lower Memory (ESP)
+| Local Buffer (e.g., char buffer[64])                        |
++─────────────────────────────────────────────────────────────+
+| Saved Base Pointer (Saved EBP / RBP)                        | [4 bytes on x86 / 8 bytes on x64]
++─────────────────────────────────────────────────────────────+
+| Saved Return Address (Saved EIP / RIP)                      | [4 bytes on x86 / 8 bytes on x64]
++─────────────────────────────────────────────────────────────+
+| Function Arguments (arg1, arg2...)                          |
++─────────────────────────────────────────────────────────────+ Higher Memory
+```
+
+#### The Mechanics of a Stack-Based Buffer Overflow (CWE-121)
+
+A stack buffer overflow occurs when an application writes more data to a stack-allocated buffer than was allocated, without validating input boundaries:
+* **Dangerous Functions**: Unbounded C functions like `strcpy()`, `gets()`, `strcat()`, `sprintf()`, and `scanf("%s")`.
+* **The Overwrite Mechanism**: If a 64-byte buffer is supplied with 100 bytes of input, the excess bytes spill past the buffer boundary, overwriting the **Saved EBP**, and critically, the **Saved EIP (Return Address)**.
+* **Instruction Pointer Hijack**: When the function completes, it executes the **Function Epilogue**:
+  ```nasm
+  mov esp, ebp      ; Deallocate local variables
+  pop ebp           ; Restore caller's base pointer
+  ret               ; Pop the top of the stack into the Instruction Pointer (EIP/RIP)
+  ```
+  If an auditor has overwritten the Saved EIP with a specific address, the processor unconditionally resumes execution at that address.
+
+#### The 6-Stage Classical Buffer Overflow Methodology (Interview Standard)
+
+```
+[ Stage 1: Spiking & Fuzzing ]
+     │ Supply expanding character sequences until the application faults and crashes.
+     v
+[ Stage 2: Finding the Exact Offset ]
+     │ Transmit a unique non-repeating cyclic pattern (e.g., Aa0Aa1Aa2...).
+     │ Read the crash crash dump register (e.g., EIP = 0x35694234). Calculate exact byte distance.
+     v
+[ Stage 3: Confirming EIP Control ]
+     │ Send: [Padding to Offset] + [0x42424242 ("BBBB")]. Confirm EIP equals 42424242.
+     v
+[ Stage 4: Identifying Bad Characters ]
+     │ Transmit all hex bytes from \x01 to \xff (excluding \x00 null byte).
+     │ Inspect memory to find truncated, altered, or dropped bytes.
+     v
+[ Stage 5: Locating a Trampoline Instruction (JMP ESP) ]
+     │ Search loaded executable modules/DLLs for a static 'JMP ESP' or 'CALL ESP' opcode (\xff\xe4).
+     │ The module MUST lack ASLR, SafeSEH, and memory protections.
+     v
+[ Stage 6: Exploit Payload Delivery ]
+     │ Structure: [Padding to Offset] + [JMP ESP Address] + [NOP Sled (\x90)] + [Shellcode].
+     │ Upon 'ret', EIP jumps to JMP ESP, which pivots execution directly into the NOP sled on the stack.
+```
+
+#### Modern Exploit Mitigations & Defensive Architectures
+
+Modern operating systems and compilers deploy multi-layered hardware and kernel defenses to neutralize memory corruption:
+
+| Defense Mechanism | Operational Mechanism | Defensive Impact | Adversary Bypass Technique |
+| :--- | :--- | :--- | :--- |
+| **DEP / NX (Data Execution Prevention)** | Hardware page table flag (bit 63) marks stack and heap memory pages as Non-Executable (`R/W` without `X`). | Prevents the CPU from executing shellcode residing on the stack or heap. | **Return-Oriented Programming (ROP)**: Chains together existing instruction fragments ending in `ret` ("gadgets") to call `VirtualProtect()` or `mprotect()` to make memory executable. |
+| **ASLR (Address Space Layout Randomization)** | Linux kernel and Windows memory managers randomize the base memory offsets of the stack, heap, and shared libraries (`libc.so`, `ntdll.dll`) upon execution. | Eliminates static, hardcoded return addresses. | **Memory Leaks / Partial Overwrites**: Exploiting format string or out-of-bounds read flaws to leak runtime pointers; overwriting only the lower 12 bits of an address (which remain un-randomized within a 4KB page). |
+| **Stack Canaries (Stack Cookies)** | Compilers (`gcc -fstack-protector`, MSVC `/GS`) place a randomized pseudo-random word (often containing `\x00` to terminate string copies) immediately before the saved return address. | If buffer spills over, the canary value changes. Function prologue validates canary against original; mismatches trigger immediate termination (`__stack_chk_fail`). | **Canary Leak / Brute-Force**: Leaking canary value via memory disclosure, or guessing byte-by-byte in `fork()`-based network services where child processes preserve the parent's canary value. |
+
+---
+
+### 4.4 Filesystem Architectures
 
 | Feature | NTFS (Windows) | ext4 (Linux) |
 | :--- | :--- | :--- |
@@ -138,7 +244,7 @@ Linux is a monolithic kernel where drivers, scheduling, virtual filesystems, and
 
 ---
 
-### 4.4 Office Productivity Security: Formulas, Macros, and Automated Billing Workflows
+### 4.5 Office Productivity Security: Formulas, Macros, and Automated Billing Workflows
 
 Enterprise operations rely heavily on office applications (Microsoft Excel, Word, PowerPoint, Access) and automated spreadsheet workflows (CSV batch imports, billing parsers, ERP synchronization). These components are frequent targets for data manipulation and unauthorized code execution.
 
