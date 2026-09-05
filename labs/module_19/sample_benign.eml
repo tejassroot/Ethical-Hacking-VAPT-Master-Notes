@@ -1,0 +1,28 @@
+Return-Path: <alice@trusted-partner.corp>
+Received: from mx-inbound.enterprise.corp (mx-inbound.enterprise.corp [198.51.100.25])
+    by mbox01.enterprise.corp (Postfix) with ESMTPS id 4TZy0128zJz9L
+    for <bob@enterprise.corp>; Sat, 05 Sep 2026 10:15:22 +0000 (UTC)
+Received: from relay01.trusted-partner.corp (relay01.trusted-partner.corp [203.0.113.50])
+    by mx-inbound.enterprise.corp (Enterprise SEG) with ESMTPS (TLSv1.3/TLS_AES_256_GCM_SHA384)
+    id 4TZy0099zKx11
+    for <bob@enterprise.corp>; Sat, 05 Sep 2026 10:15:20 +0000 (UTC)
+Received: from internal-smtp.trusted-partner.corp (internal-smtp.local [10.20.30.5])
+    by relay01.trusted-partner.corp (Postfix) with ESMTP id 3P001144AA
+    for <bob@enterprise.corp>; Sat, 05 Sep 2026 10:15:18 +0000 (UTC)
+Authentication-Results: mx-inbound.enterprise.corp;
+    spf=pass (sender IP is 203.0.113.50) smtp.mailfrom=alice@trusted-partner.corp;
+    dkim=pass (signature was verified) header.d=trusted-partner.corp;
+    dmarc=pass (p=reject sp=reject dis=none) header.from=trusted-partner.corp
+From: "Alice Smith" <alice@trusted-partner.corp>
+To: "Bob Jones" <bob@enterprise.corp>
+Subject: Project Status and Sprint Milestones
+Date: Sat, 05 Sep 2026 10:15:15 +0000
+Message-ID: <20260905101515.98765.alice@trusted-partner.corp>
+Content-Type: text/plain; charset="utf-8"
+
+Hi Bob,
+
+Here is the weekly update regarding our joint security posture review. Everything is progressing on schedule.
+
+Best regards,
+Alice
