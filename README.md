@@ -105,7 +105,8 @@ python3 scripts/lab_runner.py --interactive
 The master curriculum spans 12 structured volumes covering every operational phase of offensive and defensive security engineering:
 
 ### Volume 01: Computer & Programming Foundations
-- [Module 01: Computer Hardware, OS Architecture & Productivity Systems](./Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md) — CPU microarchitectures, memory hierarchy, system calls, OS kernel/user-space mechanics, and malicious document macro structures.
+- [Special Primer: Computer Science & Systems Foundations from Absolute Zero](./Volume_01_Computer_and_Programming_Foundations/Zero_Knowledge_Computer_Foundations_Master_Guide.md) — First-principles guide for absolute beginners: bits, bytes, binary/hex, CPU/RAM/SSD hardware anatomy, OS boot lifecycle, terminal survival guide, magic bytes, postal networking model, and core security definitions.
+- [Module 01: Computer Hardware, OS Architecture & Productivity Systems](./Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md) — CPU microarchitectures, memory hierarchy, system calls, OS kernel/user-space mechanics, stack layout, and malicious document macro structures.
 - [Module 02: Advanced Programming, Fullstack Architecture & Secure SDLC](./Volume_01_Computer_and_Programming_Foundations/Module_02_Advanced_Programming_and_Secure_Development.md) — Multi-tier software architecture, secure SDLC integration, STRIDE threat modeling, and SAST taint-flow analysis.
 
 ### Volume 02: Linux, Networking & Security Foundations

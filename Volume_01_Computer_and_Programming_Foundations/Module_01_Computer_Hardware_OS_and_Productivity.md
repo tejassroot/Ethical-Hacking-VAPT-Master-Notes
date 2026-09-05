@@ -23,6 +23,12 @@ Prior to engaging with this module, students should possess:
 * Basic command-line fluency (navigating directories, inspecting files).
 * Foundational awareness of computer system components (input, processing, storage).
 
+> [!TIP]
+> **Starting from Absolute Zero?**
+> If you have never studied computer science or are completely new to how computers, bits, bytes, hardware, and networks operate, start first with our dedicated primer:
+> **[Computer Science & Systems Foundations from Absolute Zero](./Zero_Knowledge_Computer_Foundations_Master_Guide.md)**.
+> It breaks down everything from transistors and binary counting to RAM vs. SSD, how an OS boots, terminal navigation, and the postal network model before you dive into CPU registers and memory rings.
+
 ---
 
 ## 3. What Is It?
