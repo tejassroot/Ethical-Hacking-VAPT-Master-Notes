@@ -1,0 +1,52 @@
+version: '3.8'
+
+networks:
+  dmz_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.3.0/24
+  internal_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.4.0/24
+
+services:
+  edge_gateway:
+    image: nginx:alpine
+    container_name: lab_edge_gateway
+    networks:
+      dmz_net:
+        ipv4_address: 172.30.3.10
+      internal_net:
+        ipv4_address: 172.30.4.10
+    ports:
+      - "127.0.0.1:8443:443"
+      - "127.0.0.1:8000:80"
+    volumes:
+      - ./nginx_dmz.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
+
+  internal_backend:
+    image: python:3.10-slim
+    container_name: lab_internal_backend
+    networks:
+      internal_net:
+        ipv4_address: 172.30.4.20
+    command: >
+      sh -c "python3 -m http.server 8080 --directory /tmp"
+    restart: unless-stopped
+
+  suricata_sensor:
+    image: jasonish/suricata:latest
+    container_name: lab_suricata_sensor
+    networks:
+      internal_net:
+        ipv4_address: 172.30.4.30
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_NICE
+    command: -i eth0 -k none
+    restart: unless-stopped

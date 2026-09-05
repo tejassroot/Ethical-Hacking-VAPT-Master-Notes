@@ -13,6 +13,42 @@ Every module adheres strictly to an analytical, defensive-engineering approach w
 
 ---
 
+## Quickstart & Lab Automation (Make Commands)
+
+Anyone cloning this repository can immediately set up, audit, and run any of the 34 diagnostic lab suites using GNU `make` or the built-in Python runner with zero third-party package dependencies:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/tejassroot/Ethical-Hacking-VAPT-Master-Notes.git
+cd Ethical-Hacking-VAPT-Master-Notes
+
+# 2. Audit system prerequisites and ensure execute permissions
+make setup
+
+# 3. List all 34 curriculum lab modules
+make list
+
+# 4. Execute a specific lab by module number (e.g., Module 30: OWASP Top 10)
+make run MODULE=30
+
+# 5. Run the full regression test suite (all 34 modules)
+make test
+
+# 6. Launch interactive terminal lab menu
+make interactive
+```
+
+> **Cross-Platform Support**: If GNU `make` is not installed on your host OS (e.g., standard Windows PowerShell), you can directly invoke the unified Python runner:
+> ```bash
+> python3 scripts/lab_runner.py --check-env
+> python3 scripts/lab_runner.py --list
+> python3 scripts/lab_runner.py --run 30
+> python3 scripts/lab_runner.py --test-all
+> python3 scripts/lab_runner.py --interactive
+> ```
+
+---
+
 ## Master Volume Index
 
 ```
