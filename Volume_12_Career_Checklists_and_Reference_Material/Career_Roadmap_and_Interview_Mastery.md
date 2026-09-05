@@ -1,4 +1,4 @@
-# Volume 12: Labs, Exercises, Checklists & Reference Material
+# Volume 12: Career Roadmap, Checklists & Reference Material
 # Career Roadmap, Certification Progression & Technical Interview Mastery
 
 ---

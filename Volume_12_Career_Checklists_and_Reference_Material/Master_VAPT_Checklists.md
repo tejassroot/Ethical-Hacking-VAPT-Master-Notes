@@ -1,4 +1,4 @@
-# Volume 12: Labs, Exercises, Checklists & Reference Material
+# Volume 12: Career Roadmap, Checklists & Reference Material
 # Master VAPT Checklists: Enterprise Web, Network, Active Directory, API & Mobile
 
 ---

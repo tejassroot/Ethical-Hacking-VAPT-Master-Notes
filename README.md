@@ -107,11 +107,10 @@ The master notes library spans 12 structured volumes covering every operational 
 - [Enterprise VAPT Execution Workflow](./Volume_11_Reporting_Methodology_and_Professional_Practice/Enterprise_VAPT_Execution_Workflow.md) — End-to-end commercial engagement lifecycle: pre-engagement scoping, testing execution, vulnerability triage, and remediation retesting.
 - [Bug Bounty Hunting Methodology](./Volume_11_Reporting_Methodology_and_Professional_Practice/Bug_Bounty_Hunting_Methodology.md) — Program reconnaissance, asset surface expansion, high-signal reporting, and triager communication guidelines.
 
-### Volume 12: Reference Material, Checklists & Blueprints
-- [Master Lab Blueprints](./Volume_12_Labs_Exercises_Checklists_and_Reference_Material/Master_Lab_Blueprints.md) — Turnkey multi-tier Docker and Vagrant enclave specifications (Levels 1 through 5).
-- [Master VAPT Checklists](./Volume_12_Labs_Exercises_Checklists_and_Reference_Material/Master_VAPT_Checklists.md) — Comprehensive assessment checklists covering Web, API, Network, Active Directory, and Mobile scopes.
-- [Career Roadmap & Interview Mastery](./Volume_12_Labs_Exercises_Checklists_and_Reference_Material/Career_Roadmap_and_Interview_Mastery.md) — Comprehensive Top 50 Technical Interview Questions & Model Answers across 7 domains, candidate recovery playbooks, and career progression pathways.
-- [Authoritative References Library](./Volume_12_Labs_Exercises_Checklists_and_Reference_Material/Authoritative_References_Library.md) — Citations spanning IETF RFCs, NIST Special Publications, OWASP methodologies, and academic security literature.
+### Volume 12: Career Roadmap, Checklists & Reference Material
+- [Career Roadmap & Technical Interview Mastery](./Volume_12_Career_Checklists_and_Reference_Material/Career_Roadmap_and_Interview_Mastery.md) — Comprehensive Top 50 Technical Interview Questions & Model Answers across 7 domains, candidate recovery playbooks, and career progression pathways.
+- [Master VAPT Checklists](./Volume_12_Career_Checklists_and_Reference_Material/Master_VAPT_Checklists.md) — Comprehensive assessment checklists covering Web, API, Network, Active Directory, and Mobile scopes.
+- [Authoritative References Library](./Volume_12_Career_Checklists_and_Reference_Material/Authoritative_References_Library.md) — Master bibliography spanning IETF RFCs, NIST Special Publications, OWASP methodologies, and academic security literature.
 
 ---
 

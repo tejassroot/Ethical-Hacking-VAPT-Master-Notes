@@ -1,4 +1,4 @@
-# Volume 12: Labs, Exercises, Checklists & Reference Material
+# Volume 12: Career Roadmap, Checklists & Reference Material
 # Authoritative References Library: Standards, RFCs, NIST, OWASP & Academic Citations
 
 ---
