@@ -351,7 +351,7 @@ graphql-cop -t https://api.staging.corp/graphql
 
 Deploy this standalone script to verify JWT algorithm confusion, test Mass Assignment vs. strict DTO validation, and calculate GraphQL query depth limits.
 
-Save as [`labs/module_33/api_security_testing_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_33/api_security_testing_engine.py):
+Save as `api_security_testing_engine.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -612,7 +612,7 @@ class UserRegistrationSchema(BaseModel):
 ## 18. Progressive Hands-on Exercises
 
 ### Level 1: JWT Decoding & Signature Inspection (Beginner)
-* Execute [`labs/module_33/api_security_testing_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_33/api_security_testing_engine.py).
+* Execute `api_security_testing_engine.py`.
 * Inspect the decoded header and payload of the sample JWT.
 * Observe the output when the tampered `alg: none` token is evaluated.
 

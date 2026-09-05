@@ -189,7 +189,7 @@ httpx -l raw_historical.txt \
 
 Deploy this standalone script to practice soft-404 baseline calibration, differential response analysis, and multi-endpoint discovery without external network dependencies.
 
-Save as [`labs/module_29/fuzz_and_proxy_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_29/fuzz_and_proxy_engine.py):
+Save as `fuzz_and_proxy_engine.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -454,7 +454,7 @@ During an authorized security audit of an enterprise SaaS invoicing platform, an
 * Export the proxy CA certificate, import it into the browser certificate manager as a Trusted Root CA, and successfully capture an HTTPS session without security warnings.
 
 ### Level 2: Fuzzing Calibration & Path Discovery (Intermediate)
-* Execute [`labs/module_29/fuzz_and_proxy_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_29/fuzz_and_proxy_engine.py) to run the mock application server.
+* Execute `fuzz_and_proxy_engine.py` to run the mock application server.
 * Execute `ffuf` against `http://127.0.0.1:8890/FUZZ` using a wordlist without filters. Observe the soft-404 flood.
 * Calibrate `ffuf` using `-fs <calibrated_size>` and cleanly discover `/admin_console_v2` and `/api/v1/internal_debug`.
 

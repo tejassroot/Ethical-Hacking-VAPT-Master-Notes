@@ -435,8 +435,8 @@ This lab builds an isolated Python-based billing export system and tests whether
 
 Create a dedicated directory:
 ```bash
-mkdir -p /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_01
-cd /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_01
+mkdir -p ~/vapt_practice/module_01
+cd ~/vapt_practice/module_01
 ```
 
 Create the vulnerable billing generator (`vulnerable_billing.py`):

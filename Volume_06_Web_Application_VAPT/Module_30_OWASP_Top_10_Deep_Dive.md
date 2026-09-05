@@ -293,7 +293,7 @@ semgrep --config "p/xss" ./frontend/src
 
 Deploy this standalone script to verify BOLA, SQL Injection, SSRF, and XSS vulnerabilities, alongside testing their corresponding production-grade remediations.
 
-Save as [`labs/module_30/owasp_top10_lab.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_30/owasp_top10_lab.py):
+Save as `owasp_top10_lab.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -631,7 +631,7 @@ app.get('/api/v1/invoices/:id', authenticateJWT, async (req, res) => {
 ## 18. Progressive Hands-on Exercises
 
 ### Level 1: Multi-Tenant Access Control Verification (Beginner)
-* Run [`labs/module_30/owasp_top10_lab.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_30/owasp_top10_lab.py).
+* Run `owasp_top10_lab.py`.
 * Review the output for the BOLA audit. Add a third tenant and third user to the SQLite database.
 * Implement a test verifying that User 3 cannot access documents owned by Tenant 1 or Tenant 2.
 

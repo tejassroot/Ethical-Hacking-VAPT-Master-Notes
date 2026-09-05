@@ -211,7 +211,7 @@ pandoc 00_cover.md 01_exec_summary.md 02_scope.md findings/*.md \
 
 Deploy this standalone script to calculate CVSS v3.1 scores mathematically, perform automated secret redaction, and compile standardized Finding Dossiers.
 
-Save as [`labs/module_31/vapt_report_and_cvss_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_31/vapt_report_and_cvss_engine.py):
+Save as `vapt_report_and_cvss_engine.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -420,7 +420,7 @@ During an authorized security audit of an enterprise financial service, an audit
 ## 18. Progressive Hands-on Exercises
 
 ### Level 1: CVSS v3.1 Calculation & Vector Formulation (Beginner)
-* Run [`labs/module_31/vapt_report_and_cvss_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_31/vapt_report_and_cvss_engine.py).
+* Run `vapt_report_and_cvss_engine.py`.
 * Formulate CVSS v3.1 vectors and calculate base scores for:
   1. Stored XSS in an internal administrative comment system requiring admin interaction.
   2. Unauthenticated Remote Code Execution in a public-facing API gateway.

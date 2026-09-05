@@ -210,7 +210,7 @@ sudo responder -I eth0 -A
 
 Deploy this standalone script to evaluate Layer 2 security: it sniffs raw ARP packets, parses sender IP/MAC mappings, detects rapid ARP address flapping (indicative of active cache poisoning), and verifies binding integrity without third-party libraries.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_11/layer2_security_auditor.py`:
+Save as `layer2_security_auditor.py`:
 
 ```python
 #!/usr/bin/env python3

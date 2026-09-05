@@ -240,7 +240,7 @@ hashid -m -j '$6$qZ7...$v8Z...'
 
 Deploy this standalone script to evaluate password storage: it implements salted SHA-256 vs PBKDF2 benchmarks, evaluates password entropy, and verifies Argon2/bcrypt parameter compliance.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_10/credential_security_auditor.py`:
+Save as `credential_security_auditor.py`:
 
 ```python
 #!/usr/bin/env python3

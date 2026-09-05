@@ -244,7 +244,7 @@ ip link show eth0
 
 Deploy this standalone script to evaluate active network connections: it detects whether DNS requests leak outside an active SOCKS proxy tunnel and tests whether the current public egress IP matches a known Tor exit node.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_09/anonymity_leak_auditor.py`:
+Save as `anonymity_leak_auditor.py`:
 
 ```python
 #!/usr/bin/env python3

@@ -182,7 +182,7 @@ VBoxManage snapshot "Lab_DMZ_Gateway" restore "Clean_Baseline_State"
 
 Deploy this standalone script to verify external egress containment and inter-tier access boundaries programmatically.
 
-Save as [`labs/module_27/network_containment_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_27/network_containment_auditor.py):
+Save as `network_containment_auditor.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -391,7 +391,7 @@ A security researcher configured a vulnerable Windows XP virtual machine to anal
 * Create a firewall rule in pfSense blocking all outbound DNS (UDP 53) from the research subnet to simulate an air-gapped enterprise network.
 
 ### Level 3: Programmatic Containment Verification (Advanced)
-* Execute [`labs/module_27/network_containment_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_27/network_containment_auditor.py) from within a guest VM.
+* Execute `network_containment_auditor.py` from within a guest VM.
 * Verify that external egress probes are blocked while authorized internal services remain accessible.
 
 ---

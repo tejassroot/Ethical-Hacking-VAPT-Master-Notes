@@ -262,7 +262,7 @@ snmp-check 10.10.50.20 -c public
 
 Deploy this standalone script to evaluate live services: it tests SMB dialect negotiation, probes SNMP community strings, and executes SMTP user verification without external third-party dependencies.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_07/service_enumeration_auditor.py`:
+Save as `service_enumeration_auditor.py`:
 
 ```python
 #!/usr/bin/env python3

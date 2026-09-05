@@ -213,7 +213,7 @@ hf search
 
 Deploy this standalone script to evaluate human risk: it analyzes email headers and body text, scoring the message against known psychological triggers (urgency, authority, emotional pressure) and verifying domain alignment.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_12/human_risk_evaluator.py`:
+Save as `human_risk_evaluator.py`:
 
 ```python
 #!/usr/bin/env python3

@@ -663,7 +663,7 @@ proxychains4 nmap -sT -Pn -p 445,3389,80,443 10.10.20.10
 
 Deploy this standalone script to audit Windows unquoted service paths, decode SMB signing posture, inspect Linux SUID vectors, and simulate multi-hop network pivoting.
 
-Save as [`labs/module_32/service_audit_and_pivot_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_32/service_audit_and_pivot_engine.py):
+Save as `service_audit_and_pivot_engine.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -895,7 +895,7 @@ In Windows System Properties -> Remote Desktop:
 ## 18. Progressive Hands-on Exercises
 
 ### Level 1: Windows Service Path Analysis (Beginner)
-* Execute [`labs/module_32/service_audit_and_pivot_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_32/service_audit_and_pivot_engine.py).
+* Execute `service_audit_and_pivot_engine.py`.
 * Inspect the output of the Unquoted Service Path Analyzer.
 * Modify the script to test paths containing three spaces (e.g., `C:\Custom Apps\Enterprise Tools\Management Agent\daemon.exe`).
 

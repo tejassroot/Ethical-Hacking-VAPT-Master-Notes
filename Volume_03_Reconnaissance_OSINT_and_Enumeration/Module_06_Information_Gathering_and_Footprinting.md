@@ -264,7 +264,7 @@ exiftool sample_report.pdf
 
 Deploy this standalone script to automate passive reconnaissance: it queries public Certificate Transparency logs via crt.sh JSON endpoints, tests nameservers for Zone Transfer vulnerabilities, and parses DNS SPF records without third-party dependencies.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_06/osint_footprint_engine.py`:
+Save as `osint_footprint_engine.py`:
 
 ```python
 #!/usr/bin/env python3

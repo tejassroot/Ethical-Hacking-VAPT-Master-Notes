@@ -297,7 +297,7 @@ tshark -r /tmp/capture.pcap -Y "http.request" \
 
 To deeply understand raw network mechanics, deploy this Python packet dissector. It creates an AF_PACKET raw socket on Linux, binds in promiscuous mode, and unpacks Ethernet, IPv4, and TCP headers down to individual fields without third-party dependencies.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_08/network_packet_dissector.py`:
+Save as `network_packet_dissector.py`:
 
 ```python
 #!/usr/bin/env python3

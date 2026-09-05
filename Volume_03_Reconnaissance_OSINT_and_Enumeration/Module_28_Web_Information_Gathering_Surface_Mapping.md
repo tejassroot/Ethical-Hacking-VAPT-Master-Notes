@@ -240,7 +240,7 @@ cat subdomains.txt | httpx -silent -status-code -title -tech-detect -follow-redi
 
 Deploy this standalone script to calculate MurmurHash3 favicon digests, execute origin candidate searches, and audit web responses without third-party dependencies.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_28/web_surface_mapper.py`:
+Save as `web_surface_mapper.py`:
 
 ```python
 #!/usr/bin/env python3

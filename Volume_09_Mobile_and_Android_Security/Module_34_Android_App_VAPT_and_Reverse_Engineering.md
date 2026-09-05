@@ -341,7 +341,7 @@ if (ObjC.available) {
 
 Deploy this standalone script to simulate Smali bytecode patching, scan compiled binary string tables for leaked credentials, and synthesize universal Frida hooking scripts.
 
-Save as [`labs/module_34/apk_reversing_and_frida_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_34/apk_reversing_and_frida_engine.py):
+Save as `apk_reversing_and_frida_engine.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -583,7 +583,7 @@ Advanced mobile applications inspect `/proc/self/maps` and `/proc/self/status` f
 * Inspect `out_dir/AndroidManifest.xml` and locate all exported components and declared permissions.
 
 ### Level 2: Smali Bytecode Modification & Recompilation (Intermediate)
-* Execute [`labs/module_34/apk_reversing_and_frida_engine.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_34/apk_reversing_and_frida_engine.py).
+* Execute `apk_reversing_and_frida_engine.py`.
 * Review the Smali opcode patching simulation (`if-eqz` to `if-nez`).
 * In an isolated lab, modify a real Smali method, rebuild the APK with `apktool b`, align with `zipalign`, and sign with `apksigner`.
 

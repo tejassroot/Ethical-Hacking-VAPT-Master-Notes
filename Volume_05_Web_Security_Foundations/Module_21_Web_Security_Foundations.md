@@ -256,7 +256,7 @@ curl -I --http2 https://target.com/
 
 Deploy this standalone script to evaluate web security headers: it injects candidate origins, tests for reflected CORS misconfigurations, and audits cookie flags without third-party dependencies.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_21/cors_header_auditor.py`:
+Save as `cors_header_auditor.py`:
 
 ```python
 #!/usr/bin/env python3

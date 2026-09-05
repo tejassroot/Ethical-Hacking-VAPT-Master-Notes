@@ -380,7 +380,7 @@ awslocal s3api get-bucket-acl --bucket company-confidential-backups
 
 ## 7. Automated Lab Health Check & Teardown Script
 
-Save as [`scripts/lab_manager.sh`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/scripts/lab_manager.sh):
+Sample lifecycle script (`lab_manager.sh`):
 ```bash
 #!/usr/bin/env bash
 # Master Lab Lifecycle Manager

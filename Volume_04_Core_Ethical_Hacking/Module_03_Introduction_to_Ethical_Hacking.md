@@ -277,7 +277,7 @@ done
 
 Deploy this standalone script to automate pre-flight scope enforcement: it validates target domain resolutions against a cryptographically signed JSON scope manifest, preventing out-of-scope packet transmission.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_03/scope_enforcement_guard.py`:
+Save as `scope_enforcement_guard.py`:
 
 ```python
 #!/usr/bin/env python3

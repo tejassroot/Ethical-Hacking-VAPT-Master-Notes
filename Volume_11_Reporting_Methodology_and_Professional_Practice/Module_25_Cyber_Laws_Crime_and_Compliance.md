@@ -278,7 +278,7 @@ We execute an automated digital forensic evidence custody verification and regul
 ```
 +-------------------------------------------------------------------------------+
 | Local Authorized Lab Environment                                              |
-| Directory: /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_25/       |
+| Environment: Isolated Practice Sandbox                                        |
 | Script:    evidence_custody_verifier.py                                       |
 +-------------------------------------------------------------------------------+
 ```
@@ -288,7 +288,7 @@ We execute an automated digital forensic evidence custody verification and regul
 Execute the standalone Python lab engine:
 
 ```bash
-python3 /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_25/evidence_custody_verifier.py
+python3 evidence_custody_verifier.py
 ```
 
 ### 9.3 Expected Deterministic Lab Output
@@ -560,7 +560,7 @@ Every security assessment must be governed by three binding legal instruments:
 ### Level 2: Intermediate — Forensic Chain of Custody Manifest Generation
 * **Task**: Execute and extend the module lab engine.
 * **Execution**:
-  1. Navigate to `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_25/`.
+  1. Prepare your testing directory (e.g., `~/vapt_practice/module_25/`).
   2. Run `evidence_custody_verifier.py`.
   3. Extend the script to parse system audit logs and generate a CSV timeline formatted for ISO/IEC 27037 courtroom presentation.
 

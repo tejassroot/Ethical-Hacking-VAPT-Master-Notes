@@ -1,12 +1,11 @@
-# Ethical Hacking & VAPT — Master Curriculum & Practical Reference Manual
+# Ethical Hacking & VAPT — Master Notes & Curriculum Reference Manual
 
 [![Curriculum](https://img.shields.io/badge/Curriculum-12%20Volumes%20%7C%2034%20Modules-0284c7.svg)](#curriculum-architecture--master-notes)
-[![Lab Verification](https://img.shields.io/badge/Lab%20Test%20Suites-34%2F34%20Passing%20(100%25)-16a34a.svg)](#practical-lab-suites--hands-on-automation)
-[![Python](https://img.shields.io/badge/Python-3.8%2B%20(Zero%20pip%20deps)-eab308.svg)](#quickstart-setup-test--run)
+[![Coverage](https://img.shields.io/badge/Coverage-Zero--Knowledge%20to%20Lead%20Pentester-16a34a.svg)](#executive-overview)
 [![Standards](https://img.shields.io/badge/Standards-NIST%20%7C%20OWASP%20%7C%20PTES%20%7C%20MITRE-ea580c.svg)](#frameworks--standards-compliance)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](#license)
 
-An exhaustive, production-grade cybersecurity compendium and automated diagnostic lab ecosystem comprising **12 Volumes**, **34 Modules**, **40 Compendia** (>140,000 words), and **34 Standalone Test Suites**. 
+An exhaustive, production-grade cybersecurity master notes compendium comprising **12 Volumes**, **34 Master Modules**, and comprehensive compendia (>150,000 words).
 
 Engineered for security researchers, penetration testers, blue team defense engineers, and application security auditors, this repository bridges foundational computer science with enterprise-grade offensive and defensive security operations.
 
@@ -29,12 +28,6 @@ Engineered for security researchers, penetration testers, blue team defense engi
   - [Volume 11: Reporting Methodology & Professional Practice](#volume-11-reporting-methodology--professional-practice)
   - [Volume 12: Reference Material, Checklists & Blueprints](#volume-12-reference-material-checklists--blueprints)
 - [The 20-Point Topic Schema Mandate](#the-20-point-topic-schema-mandate)
-- [Practical Lab Suites & Hands-On Automation](#practical-lab-suites--hands-on-automation)
-  - [Standalone Practical Lab Suites (1-to-1 Module Parity)](#standalone-practical-lab-suites-1-to-1-module-parity)
-  - [Quickstart: Setup, Test & Run](#quickstart-setup-test--run)
-  - [Make Commands Reference](#make-commands)
-  - [Cross-Platform Execution (Systems without Make)](#cross-platform-execution-systems-without-make)
-  - [Docker Security Enclaves](#docker-security-enclaves)
 - [Frameworks & Standards Compliance](#frameworks--standards-compliance)
 - [Operational Security & Responsible Testing](#operational-security--responsible-testing)
 - [License](#license)
@@ -46,7 +39,7 @@ Engineered for security researchers, penetration testers, blue team defense engi
 This curriculum is structured around an analytical, defensive-engineering discipline:
 1. **Evidence-Based Auditing**: Replaces guesswork and indiscriminate scanning with systematic enumeration, hypothesis formulation, benign boundary verification, and verifiable proof-of-concept synthesis.
 2. **First-Principles Mastery**: Begins from absolute zero (bits, bytes, hardware, OS boot, and postal networking) up to advanced enterprise Active Directory attacks, binary exploitation, and cloud testing.
-3. **Deterministic Lab Design**: Every primary module includes an automated, self-testing diagnostic tool written with **zero third-party package dependencies** (pure Python 3 standard library and POSIX Bash).
+3. **Methodical Technical Architecture**: Every module features deep architectural diagrams, protocol state machines, step-by-step verification methodologies, and defensive code remediations.
 4. **Defense-in-Depth Remediation**: Every vulnerability classification pairs root-cause data-flow analysis with production-ready code fixes, framework-specific defenses, and system hardening benchmarks.
 
 ---
@@ -149,133 +142,9 @@ To maintain consistent depth across the entire curriculum, every primary module 
 
 ---
 
-## Practical Lab Suites & Hands-On Automation
-
-Every primary module includes an automated, standalone diagnostic lab script located in [`labs/`](./labs). All 34 lab scripts execute locally with **zero external package dependencies** (pure Python standard library and POSIX Bash).
-
-### Standalone Practical Lab Suites (1-to-1 Module Parity)
-
-| Module | Diagnostic Lab Script | Focus Area & Capabilities | Test Status |
-| :---: | :--- | :--- | :---: |
-| **01** | [`labs/module_01/hardware_os_security_auditor.py`](./labs/module_01/hardware_os_security_auditor.py) | CPU flags (`NX`, `SMEP`, `SMAP`, `KPTI`) & Linux ASLR memory randomization | `PASS` |
-| **02** | [`labs/module_02/secure_sdlc_threat_modeler.py`](./labs/module_02/secure_sdlc_threat_modeler.py) | STRIDE threat modeling, DREAD risk scoring & SAST taint-flow analysis | `PASS` |
-| **03** | [`labs/module_03/scope_enforcement_guard.py`](./labs/module_03/scope_enforcement_guard.py) | Scoping guardrails, CIDR boundary validation & target containment | `PASS` |
-| **04** | [`labs/module_04/virtual_lab_topology_checker.py`](./labs/module_04/virtual_lab_topology_checker.py) | Multi-NIC pivot topologies, RFC 1918 compliance & Docker privilege audits | `PASS` |
-| **05** | [`labs/module_05/linux_security_audit.sh`](./labs/module_05/linux_security_audit.sh) | Linux kernel, SUID/SGID auditing, world-writable files & privilege escalation | `PASS` |
-| **06** | [`labs/module_06/osint_footprint_engine.py`](./labs/module_06/osint_footprint_engine.py) | Passive OSINT footprinting, Certificate Transparency mining & WHOIS parsing | `PASS` |
-| **07** | [`labs/module_07/service_enumeration_auditor.py`](./labs/module_07/service_enumeration_auditor.py) | Service enumeration, banner grabbing, SMB dialects & RPC port mapping | `PASS` |
-| **08** | [`labs/module_08/network_packet_dissector.py`](./labs/module_08/network_packet_dissector.py) | Raw socket IPv4, TCP (3-way handshake flags) & UDP dissector with checksums | `PASS` |
-| **09** | [`labs/module_09/anonymity_leak_auditor.py`](./labs/module_09/anonymity_leak_auditor.py) | Tor circuit integrity, DNS leak detection, WebRTC STUN & IPv6 leakage | `PASS` |
-| **10** | [`labs/module_10/credential_security_auditor.py`](./labs/module_10/credential_security_auditor.py) | KDF work factors (`PBKDF2`/`Argon2`/`bcrypt`), Shannon entropy & policy checks | `PASS` |
-| **11** | [`labs/module_11/layer2_security_auditor.py`](./labs/module_11/layer2_security_auditor.py) | ARP spoofing detection, Dynamic ARP Inspection (DAI) & MAC exhaustion | `PASS` |
-| **12** | [`labs/module_12/human_risk_evaluator.py`](./labs/module_12/human_risk_evaluator.py) | Psychological pretext analyzer, Cialdini heuristics & phishing metrics | `PASS` |
-| **13** | [`labs/module_13/wireless_security_auditor.py`](./labs/module_13/wireless_security_auditor.py) | 802.11 frame parser, WPA2 handshake PMK synthesizer, PMKID & 802.11w | `PASS` |
-| **14** | [`labs/module_14/host_defense_auditor.py`](./labs/module_14/host_defense_auditor.py) | CWE-428 unquoted paths, Windows Run/RunOnce ASEP keys & Sysmon logs | `PASS` |
-| **15** | [`labs/module_15/phishing_analysis_engine.py`](./labs/module_15/phishing_analysis_engine.py) | RFC 5321/5322 header alignment, SPF DNS tree, DKIM & AiTM proxy detection | `PASS` |
-| **16** | [`labs/module_16/malware_analysis_engine.py`](./labs/module_16/malware_analysis_engine.py) | PE/ELF section entropy, import hashing (`imphash`) & YARA rule pattern engine | `PASS` |
-| **17** | [`labs/module_17/android_storage_and_manifest_auditor.py`](./labs/module_17/android_storage_and_manifest_auditor.py) | `AndroidManifest.xml` parser (exported components) & SQLite storage auditor | `PASS` |
-| **18** | [`labs/module_18/siem_detection_engine.py`](./labs/module_18/siem_detection_engine.py) | Sigma rule parser, Splunk/Elastic query translator & Risk-Based Alerting | `PASS` |
-| **19** | [`labs/module_19/audit_email_headers.py`](./labs/module_19/audit_email_headers.py) | Chronological `Received:` hop parser, spoofed boundaries & DMARC analyzer | `PASS` |
-| **20** | [`labs/module_20/dos_mitigation_engine.py`](./labs/module_20/dos_mitigation_engine.py) | UDP amplification factor, RFC 4987 SYN cookies, ReDoS checks & Token Bucket | `PASS` |
-| **21** | [`labs/module_21/cors_header_auditor.py`](./labs/module_21/cors_header_auditor.py) | Same-Origin Policy (SOP), CORS misconfigurations & security headers | `PASS` |
-| **22** | [`labs/module_22/audit_iot_firmware.py`](./labs/module_22/audit_iot_firmware.py) | Binwalk header signatures, SquashFS entropy & hardcoded credentials | `PASS` |
-| **23** | [`labs/module_23/stego_forensics_lab.py`](./labs/module_23/stego_forensics_lab.py) | 24-bit BMP & PNG LSB steganography injector, extractor & Chi-Square detector | `PASS` |
-| **24** | [`labs/module_24/pki_crypto_audit.py`](./labs/module_24/pki_crypto_audit.py) | Cipher suite auditor, RSA/ECC generator, X.509 chain verifier & CRL check | `PASS` |
-| **25** | [`labs/module_25/evidence_custody_verifier.py`](./labs/module_25/evidence_custody_verifier.py) | Cryptographic chain-of-custody ledger with SHA-256 block-hashing | `PASS` |
-| **26** | [`labs/module_26/evidence_chain_of_custody_sealer.py`](./labs/module_26/evidence_chain_of_custody_sealer.py) | Dual-hash (SHA-256 + SHA-512) evidence sealing adhering to ISO/IEC 27037 | `PASS` |
-| **27** | [`labs/module_27/network_containment_auditor.py`](./labs/module_27/network_containment_auditor.py) | Multi-subnet boundary validation, routing tables & egress containment | `PASS` |
-| **28** | [`labs/module_28/web_surface_mapper.py`](./labs/module_28/web_surface_mapper.py) | HTML/DOM parser, tech stack fingerprinting & JavaScript API endpoint discovery | `PASS` |
-| **29** | [`labs/module_29/fuzz_and_proxy_engine.py`](./labs/module_29/fuzz_and_proxy_engine.py) | Multi-threaded HTTP fuzzing, wordlist mutation & Burp upstream proxy adapter | `PASS` |
-| **30** | [`labs/module_30/owasp_top10_lab.py`](./labs/module_30/owasp_top10_lab.py) | OWASP Top 10 lab: SQLi, XSS, IDOR, SSRF, SSTI, Mass Assignment & Defenses | `PASS` |
-| **31** | [`labs/module_31/vapt_report_and_cvss_engine.py`](./labs/module_31/vapt_report_and_cvss_engine.py) | CVSS v3.1/v4.0 vector scoring calculator & structured Markdown report compiler | `PASS` |
-| **32** | [`labs/module_32/service_audit_and_pivot_engine.py`](./labs/module_32/service_audit_and_pivot_engine.py) | Network pivot simulation, SMB signing auditor, anonymous FTP & relay testing | `PASS` |
-| **33** | [`labs/module_33/api_security_testing_engine.py`](./labs/module_33/api_security_testing_engine.py) | JWT algorithm manipulation (`alg: none`), Mass Assignment & GraphQL depth | `PASS` |
-| **34** | [`labs/module_34/apk_reversing_and_frida_engine.py`](./labs/module_34/apk_reversing_and_frida_engine.py) | Smali bytecode inverter, API secret scanner & dynamic Frida hook synthesizer | `PASS` |
-
-### Quickstart: Setup, Test & Run
-
-Anyone cloning this repository can immediately set up, audit, and run any of the 34 diagnostic lab suites using GNU `make` or the built-in Python runner.
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/tejassroot/Ethical-Hacking-VAPT-Master-Notes.git
-cd Ethical-Hacking-VAPT-Master-Notes
-
-# 2. Audit system prerequisites and configure permissions
-make setup
-
-# 3. View all available lab modules
-make list
-
-# 4. Execute a specific lab by module number (e.g., Module 30: OWASP Top 10)
-make run MODULE=30
-
-# 5. Run the full regression test sweep across all 34 labs
-make test
-
-# 6. Launch the interactive terminal menu
-make interactive
-```
-
-### Make Commands
-
-| Command | Description |
-| :--- | :--- |
-| `make help` | Displays the command manual, syntax examples, and descriptions |
-| `make setup` | Audits host environment tools (`python3`, `bash`, `git`, `make`, `docker`) and ensures execute permissions |
-| `make list` | Lists all 34 curriculum modules, titles, and lab script locations |
-| `make test` | Runs the automated test harness across all 34 modules (reporting execution time and pass/fail summary) |
-| `make run MODULE=<N>` | Runs a specific module lab directly (e.g., `make run MODULE=01`, `make run MODULE=30`) |
-| `make interactive` | Launches an interactive terminal menu for selecting and running labs |
-| `make docker-up` | Launches isolated Docker security testing enclaves (Alpine Diag, Juice Shop, DVWA, Nginx WAF, LocalStack) |
-| `make docker-down` | Stops and tears down active Docker security enclaves |
-| `make docker-status` | Inspects container status, port mappings, and running lab services |
-| `make clean` | Removes Python bytecode caches (`__pycache__`, `*.pyc`) and temporary test artifacts |
-
-### Cross-Platform Execution (Systems without Make)
-
-For environments without GNU `make` installed (e.g., standard Windows PowerShell or bare environments), the standalone Python manager provides identical functionality:
-
-```bash
-# Audit host tools
-python3 scripts/lab_runner.py --check-env
-
-# List modules
-python3 scripts/lab_runner.py --list
-
-# Run specific module
-python3 scripts/lab_runner.py --run 30
-
-# Run full regression suite
-python3 scripts/lab_runner.py --test-all
-
-# Launch interactive menu
-python3 scripts/lab_runner.py --interactive
-```
-
-### Docker Security Enclaves
-
-For live service penetration testing and container security experimentation, pre-configured compose files are located in the [`docker/`](./docker) directory:
-
-| Enclave | Compose Configuration | Included Services |
-| :--- | :--- | :--- |
-| **Level 1** | [`docker/docker-compose.level1.yml`](./docker/docker-compose.level1.yml) | Alpine Diagnostic Box (`nmap`, `tcpdump`, `dig`, `socat`, `scapy`, `python3`) |
-| **Level 2** | [`docker/docker-compose.level2.yml`](./docker/docker-compose.level2.yml) | OWASP Juice Shop (SPA/API), DVWA (Classic Web), MariaDB Relational Backend |
-| **Level 3** | [`docker/docker-compose.level3.yml`](./docker/docker-compose.level3.yml) | Nginx DMZ Reverse Proxy & WAF, Internal Backend Service, Suricata NIDS Sensor |
-| **Level 5** | [`docker/docker-compose.level5.yml`](./docker/docker-compose.level5.yml) | LocalStack (AWS S3/IAM/Lambda Emulation), MinIO S3 Object Storage Service |
-
-To spin up or inspect any enclave:
-```bash
-make docker-up       # Starts all enclaves
-make docker-status   # Checks active container ports
-make docker-down     # Shuts down enclaves cleanly
-```
-
----
-
 ## Frameworks & Standards Compliance
 
-The analytical methodologies, lab structures, and checklists across this repository directly align with industry standards:
+The analytical methodologies, technical architectures, and checklists across this repository directly align with industry standards:
 - **NIST Special Publications**: NIST SP 800-115 (*Technical Guide to Information Security Testing and Assessment*), NIST SP 800-53 Rev. 5, NIST SP 800-30.
 - **OWASP Foundations**: OWASP Web Security Testing Guide (WSTG v4.2), Application Security Verification Standard (ASVS v4.0.3), Mobile Application Security Verification Standard (MASVS), and API Security Top 10.
 - **Penetration Testing Execution Standard (PTES)**: Full phase coverage from Pre-engagement Interactions to Post-exploitation and Reporting.
@@ -287,8 +156,8 @@ The analytical methodologies, lab structures, and checklists across this reposit
 ## Operational Security & Responsible Testing
 
 1. **Secret Masking & Redaction**: In accordance with operational security standards, all sample tokens, API keys, and session hashes are redacted to their first 4 characters followed by masking (e.g., `sk_live_1234****REDACTED`).
-2. **Benign Boundary Verification**: All test probes in the lab suites use non-destructive indicators (e.g., mathematical evaluation proofs, loopback listeners, console log triggers) rather than intrusive payloads.
-3. **Strict Scoping**: Testing must strictly remain within authorized target environments, virtualized isolated networks, and designated container enclaves.
+2. **Benign Boundary Verification**: All test probes in the curriculum use non-destructive indicators (e.g., mathematical evaluation proofs, loopback listeners, console log triggers) rather than intrusive payloads.
+3. **Strict Scoping**: Testing must strictly remain within authorized target environments, virtualized isolated networks, and designated systems.
 
 ---
 

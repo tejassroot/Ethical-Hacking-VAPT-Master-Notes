@@ -337,8 +337,7 @@ We construct an isolated Python SQLite micro-service demonstrating two implement
 ```
 +-------------------------------------------------------------+
 | Local Authorized Lab Environment                            |
-| File: /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/    |
-|       module_02/secure_dev_lab.py                           |
+| Script: secure_dev_lab.py                                                   |
 +-------------------------------------------------------------+
 ```
 
@@ -346,8 +345,8 @@ We construct an isolated Python SQLite micro-service demonstrating two implement
 
 Create directory:
 ```bash
-mkdir -p /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_02
-cd /home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_02
+mkdir -p ~/vapt_practice/module_02
+cd ~/vapt_practice/module_02
 ```
 
 Create `secure_dev_lab.py`:

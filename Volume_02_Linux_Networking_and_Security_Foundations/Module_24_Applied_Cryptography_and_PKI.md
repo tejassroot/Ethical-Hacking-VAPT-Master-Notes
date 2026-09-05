@@ -282,7 +282,7 @@ openssl speed aes-256-gcm chacha20-poly1305 sha256
 
 Deploy this standalone script to verify key cryptographic properties: it demonstrates CBC bit-flipping vulnerabilities, validates HMAC timing-safe verification, and performs X.509 trust-chain parsing.
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_24/pki_crypto_audit.py`:
+Save as `pki_crypto_audit.py`:
 
 ```python
 #!/usr/bin/env python3

@@ -161,7 +161,7 @@ tcpdump -i eth0 host 10.100.10.25 -w evidence_trace.pcap -C 100 -W 5
 
 Deploy this standalone script to maintain an immutable forensic chain of custody across network assessment artifacts, computing SHA-256 digests and generating ISO/IEC 27037-compliant audit manifests.
 
-Save as [`labs/module_26/evidence_chain_of_custody_sealer.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_26/evidence_chain_of_custody_sealer.py):
+Save as `evidence_chain_of_custody_sealer.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -372,7 +372,7 @@ During an authorized internal network assessment of a regional hospital network,
 * Given a target CIDR (`10.50.0.0/22`) and an exclusion list (`10.50.1.10`, `10.50.2.0/24`), use `nmap` or Python to generate the exact list of in-scope target IP addresses.
 
 ### Level 2: Evidence Sealing & Chain of Custody (Intermediate)
-* Execute [`labs/module_26/evidence_chain_of_custody_sealer.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_26/evidence_chain_of_custody_sealer.py).
+* Execute `evidence_chain_of_custody_sealer.py`.
 * Create a mock evidence directory containing test logs and packet captures.
 * Generate the cryptographic manifest and verify that modifying a single byte in any file triggers an immediate tamper alert.
 

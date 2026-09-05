@@ -257,7 +257,7 @@ adb shell am start -n com.target.app/.AdminSettingsActivity
 
 Deploy this standalone script to audit Android application manifests and inspect local storage for cleartext credentials and unencrypted SQLite databases.
 
-Save as [`labs/module_17/android_storage_and_manifest_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_17/android_storage_and_manifest_auditor.py):
+Save as `android_storage_and_manifest_auditor.py`:
 
 ```python
 #!/usr/bin/env python3
@@ -504,7 +504,7 @@ securePrefs.edit().putString("auth_token", sessionToken).apply()
 * Attempt to access another application's directory: `ls /data/data/<other_app>` and observe the Linux `Permission denied` error.
 
 ### Level 2: Auditing SharedPreferences for Credential Leakage (Intermediate)
-* Execute [`labs/module_17/android_storage_and_manifest_auditor.py`](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_17/android_storage_and_manifest_auditor.py).
+* Execute `android_storage_and_manifest_auditor.py`.
 * Review the output. Modify the test manifest to include a dangerous exported Broadcast Receiver.
 * Verify that the audit engine flags the exported receiver as High Risk.
 

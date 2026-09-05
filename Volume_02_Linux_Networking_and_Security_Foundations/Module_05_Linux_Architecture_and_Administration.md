@@ -267,7 +267,7 @@ sudo grep "COMMAND=" /var/log/auth.log \
 
 Deploy this standalone, production-ready auditing script to automatically evaluate Linux DAC, capabilities, and configuration hygiene:
 
-Save as `/home/kali/Ethical_Hacking_VAPT_Master_Notes/labs/module_05/linux_security_audit.sh`:
+Save as `linux_security_audit.sh`:
 
 ```bash
 #!/usr/bin/env bash
