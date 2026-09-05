@@ -1,17 +1,18 @@
 # Volume 09: Mobile & Android Security
-# Module 34: Android Application VAPT, Reverse Engineering & Dynamic Instrumentation
+# Module 34: Mobile Application VAPT (Android & iOS), Reverse Engineering & Dynamic Instrumentation
 
 ---
 
 ## 1. Learning Objectives
 
 By completing this module, mobile penetration testers, reverse engineers, and application security auditors will be able to:
-1. **Deconstruct Android Application Packaging**: Dissect the internal structure of Android Packages (APK) and Android App Bundles (AAB), mapping DEX bytecode, binary XML manifests, compiled resources (`resources.arsc`), native `.so` libraries, and signature schemes (v1 through v4).
-2. **Execute Static Reverse Engineering**: Decompile, analyze, modify, and rebuild Android applications using `apktool` (Smali assembly) and `jadx` (reconstructed Java/Kotlin source).
-3. **Configure Advanced Mobile Interception Workbenches**: Install custom Root Certificate Authorities into Android 7.0+ system trust stores and route application traffic through Burp Suite.
-4. **Master Dynamic Binary Instrumentation with Frida**: Hook runtime methods in memory, inspect function arguments, tamper with return values, and bypass SSL Certificate Pinning and Root Detection controls.
-5. **Audit Inter-Process Communication (IPC) via Drozer**: Systematically identify and verify SQL injection and path traversal flaws in exported Content Providers.
-6. **Align Testing with OWASP MASVS & MASTG**: Standardize mobile assessment methodologies and vulnerability reporting against the OWASP Mobile Application Security Verification Standard.
+1. **Deconstruct Mobile Application Packages**: Dissect the internal structure of Android Packages (APK/AAB) and iOS Application Archives (IPA), mapping DEX/Mach-O binaries, binary manifests (`AndroidManifest.xml` / `Info.plist`), compiled resources, native shared objects/frameworks, and signature schemes.
+2. **Execute Static Reverse Engineering Across Platforms**: Decompile, analyze, and patch Android applications via `apktool`/`jadx` and analyze decrypted iOS Mach-O binaries using Ghidra, `rabin2`, and `class-dump`.
+3. **Configure Advanced Mobile Interception Workbenches**: Install custom Root Certificate Authorities into Android system trust stores and iOS profiles, routing application traffic through Burp Suite.
+4. **Master Dynamic Binary Instrumentation with Frida & Objection**: Hook runtime methods in ART and Objective-C/Swift runtimes, tamper with return values, and systematically bypass SSL Certificate Pinning, Root, and Jailbreak detection controls.
+5. **Audit Inter-Process Communication & URL Schemes**: Identify and verify SQL injection and path traversal in Android Content Providers, and validate custom URL scheme and Universal Link handling in iOS.
+6. **Decrypt and Audit FairPlay-Protected iOS Binaries**: Dump App Store-encrypted iOS applications using `frida-ios-dump`, inspect `LC_ENCRYPTION_INFO_64`, and audit App Transport Security (ATS) configurations.
+7. **Align Testing with OWASP MASVS & MASTG**: Standardize mobile assessment methodologies and vulnerability reporting against the OWASP Mobile Application Security Verification Standard across Android and iOS ecosystems.
 
 ---
 
@@ -78,6 +79,68 @@ graph TD
 | **v2 (Full APK)** | Android 7.0 (API 24) | Verifies cryptographic hash over the entire binary ZIP archive. | Blocks Janus; any modification to bytecode or manifest invalidates the signature block. |
 | **v3 (Key Rotation)** | Android 9.0 (API 28) | Adds key rotation proof-of-rotation structs into the APK signing block. | Allows developers to rotate signing keys across app updates while preserving trust. |
 | **v4 (Streaming)** | Android 11 (API 30) | Generates a separate `.idsig` tree hashing file for high-speed streaming install. | Accelerates installation of large games while enforcing cryptographic blocks. |
+
+---
+
+### 4.2 Deep Architecture: iOS IPA Packaging, Mach-O Format & FairPlay DRM
+
+An iOS application archive (`.ipa`) is a standard ZIP container that encapsulates the application bundle, compiled native code, embedded third-party frameworks, and provisioning profiles:
+
+```mermaid
+graph TD
+    subgraph "Anatomy of an iOS Application Archive (.ipa)"
+        IPA["Target Application (.ipa ZIP Container)"]
+        
+        subgraph "Application Bundle (Payload/<App>.app/)"
+            MACHO["Compiled Native Executable<br/>(ARM64 Mach-O Binary)"]
+            PLIST["Info.plist<br/>(Bundle ID, Permissions, ATS, URL Schemes)"]
+            PROV["embedded.mobileprovision<br/>(Developer Certificates & Entitlements)"]
+            SIG["_CodeSignature/CodeResources<br/>(Cryptographic Hashes of all Bundle Assets)"]
+            FW["Frameworks/*.dylib<br/>(Embedded Dynamic Shared Libraries)"]
+            ASSETS["Assets.car & Storyboards<br/>(Compiled UI Assets & Bytecode)"]
+        end
+    end
+
+    IPA --> MACHO
+    IPA --> PLIST
+    IPA --> PROV
+    IPA --> SIG
+    IPA --> FW
+    IPA --> ASSETS
+```
+
+#### 4.2.1 The Mach-O (Mach Object) Binary Format
+
+Unlike Android's Dalvik Executable (DEX) bytecode, iOS compiles directly to native **ARM64 machine instructions** packaged in the Mach-O format:
+1. **Mach-O Header**: Specifies the target CPU architecture (`ARM64` / `CPU_TYPE_ARM64 = 0x0100000C`), file type (`MH_EXECUTE`), and total load command count.
+2. **Load Commands**: Directives instructing the dynamic linker (`dyld`) how to load the application into memory:
+   - `LC_SEGMENT_64`: Defines memory segments and protection flags (Read/Write/Execute).
+   - `LC_LOAD_DYLIB`: Identifies shared libraries required by the binary (e.g., `/usr/lib/libSystem.B.dylib`).
+   - `LC_ENCRYPTION_INFO_64`: Tracks FairPlay DRM encryption state. Contains `cryptid` (`1` = encrypted via App Store; `0` = decrypted).
+   - `LC_RPATH`: Run-path search paths for embedded frameworks.
+3. **Segments and Sections**:
+   - `__PAGEZERO`: Unmapped 4GB page catching NULL pointer dereferences.
+   - `__TEXT`: Read-only executable code segment containing `__text` (machine code), `__cstring` (string literals), and `__objc_methname`.
+   - `__DATA`: Read-write memory segment containing mutable global variables (`__data`), Objective-C class pointers (`__objc_classlist`), and method references.
+   - `__LINKEDIT`: Raw metadata used by `dyld` including symbol tables, code signatures, and string tables.
+
+#### 4.2.2 FairPlay DRM & The Binary Decryption Pipeline
+
+```
+[ App Store Server ] ──(Encrypts __TEXT segment via FairPlay DRM)──> [ Target .ipa (cryptid = 1) ]
+                                                                                │
+                                                                                ▼
+[ Jailbroken iOS Test Device ] ──(Launches App; Kernel decrypts to RAM)──> [ Unencrypted Process Memory ]
+                                                                                │
+                                                                                ▼
+[ frida-ios-dump / bagbak ] ──(Dumps memory pages & sets cryptid = 0)──> [ Decrypted Mach-O Binary ]
+                                                                                │
+                                                                                ▼
+[ Static Reverse Engineering ] ──(Ghidra / IDA Pro / class-dump / rabin2)
+```
+
+1. **The FairPlay Challenge**: Binaries downloaded directly from the Apple App Store have their `__TEXT` segment encrypted with FairPlay DRM. Static reverse-engineering tools (Ghidra, IDA Pro, Hopper) cannot disassemble or decompile encrypted instructions.
+2. **The Dynamic Memory Dumping Solution**: When an iOS app starts, the iOS kernel and Secure Enclave decrypt the executable code into RAM pages. By attaching to the running process on a jailbroken device, tools like `frida-ios-dump` read the decrypted pages from virtual memory, reconstruct the Mach-O header, patch the `cryptid` flag to `0`, and write the clean, decompilable Mach-O binary back to disk.
 
 ---
 
@@ -186,6 +249,90 @@ run app.package.attacksurface com.target.app
 
 # Audit Content Providers for SQL Injection vulnerabilities
 run scanner.provider.injection -a com.target.app
+```
+
+### 8.3 iOS Binary Decryption & Static Analysis Workflow
+
+```bash
+# 1. Establish USB SSH tunnel to jailbroken iOS device (listening on localhost:2222)
+iproxy 2222 22 &
+
+# 2. Dump decrypted IPA from running memory via frida-ios-dump
+git clone https://github.com/AloneMonkey/frida-ios-dump
+cd frida-ios-dump && pip install -r requirements.txt
+python3 dump.py -u -H 127.0.0.1 -p 2222 "TargetApp"
+
+# 3. Verify FairPlay DRM is removed (cryptid must be 0)
+unzip TargetApp.ipa
+otool -l Payload/TargetApp.app/TargetApp | grep -A 4 LC_ENCRYPTION_INFO_64
+# Output:
+#          cmd LC_ENCRYPTION_INFO_64
+#      cmdsize 32
+#     cryptoff 16384
+#    cryptsize 1236992
+#      cryptid 0    <-- 0 confirms binary is fully decrypted and ready for static analysis!
+
+# 4. Check Mach-O Binary Security Compiler Hardening Flags
+rabin2 -I Payload/TargetApp.app/TargetApp
+# Verify:
+#   pic: true      (PIE - Position Independent Executable)
+#   canary: true   (Stack Smashing Protection / Stack Canaries)
+#   arc: true      (Automatic Reference Counting / Memory Safety)
+
+# 5. Extract Objective-C Class Headers
+class-dump -H -o Headers/ Payload/TargetApp.app/TargetApp
+
+# 6. Audit App Transport Security (ATS) & Sensitive Permissions in Info.plist
+plutil -p Payload/TargetApp.app/Info.plist | grep -i -E "NSAllowsArbitraryLoads|CFBundleURLSchemes"
+```
+
+### 8.4 iOS Dynamic Instrumentation via Objection & Frida
+
+```bash
+# 1. Spawn target iOS application under Objection instrumentation
+objection -g "TargetApp" explore
+
+# 2. Disable iOS SSL Certificate Pinning (hooks SecTrustEvaluate and NSURLSession)
+[TargetApp] -> ios sslpinning disable
+
+# 3. Disable iOS Jailbreak Detection routines
+[TargetApp] -> ios jailbreak disable
+
+# 4. Dump entire iOS hardware-backed Keychain items
+[TargetApp] -> ios keychain dump --dump-entitlements
+
+# 5. Monitor runtime iOS clipboard/pasteboard leaks
+[TargetApp] -> ios pasteboard monitor
+```
+
+#### Objective-C Dynamic Method Hooking via Frida:
+```javascript
+// Universal iOS NSURLSession HTTP Request Logger & Pinning Bypass
+if (ObjC.available) {
+    console.log("[*] iOS Objective-C Runtime Detected.");
+
+    // Hook NSURLSession data tasks
+    var NSURLSession = ObjC.classes.NSURLSession;
+    var hook = NSURLSession["- dataTaskWithRequest:completionHandler:"];
+    Interceptor.attach(hook.implementation, {
+        onEnter: function(args) {
+            var request = ObjC.Object(args[2]);
+            var url = request.URL().absoluteString().toString();
+            console.log("[+] [iOS HTTP Probe] Dispatched Request: " + url);
+        }
+    });
+
+    // Bypass SecTrustEvaluate (CoreFoundation TLS verification)
+    var SecTrustEvaluateWithError = Module.findExportByName("Security", "SecTrustEvaluateWithError");
+    if (SecTrustEvaluateWithError) {
+        Interceptor.attach(SecTrustEvaluateWithError, {
+            onLeave: function(retval) {
+                console.log("[+] [iOS SecTrustEvaluateWithError] Forcing TLS trust result to TRUE (1)");
+                retval.replace(ptr(1));
+            }
+        });
+    }
+}
 ```
 
 ---
@@ -418,10 +565,14 @@ Advanced mobile applications inspect `/proc/self/maps` and `/proc/self/status` f
 ### Intermediate Level
 3. **Question**: Explain how an auditor bypasses SSL Certificate Pinning using Frida.
    * *Answer*: In Android, SSL pinning is typically enforced by custom `X509TrustManager` implementations or HTTP client interceptors (like OkHttp's `CertificatePinner`). When using Frida, the auditor injects JavaScript code into the running application process. The script hooks the target validation method (e.g., `CertificatePinner.check()` or `TrustManager.checkServerTrusted()`) and replaces the implementation with an empty function that returns immediately without throwing a `CertificateException`. As a result, the application accepts the proxy's certificate without error.
+4. **Question**: What is App Transport Security (ATS) in iOS, and why is `NSAllowsArbitraryLoads = true` considered a critical misconfiguration?
+   * *Answer*: App Transport Security (ATS) is an iOS networking security feature that enforces best-practice HTTPS connections (requiring TLS 1.2+, forward secrecy ciphers, and valid public CAs). If developers set `<key>NSAllowsArbitraryLoads</key><true/>` in `Info.plist`, ATS is completely deactivated for the application. This allows any component or third-party SDK to transmit credentials, session tokens, and personal data over unencrypted cleartext HTTP, leaving users vulnerable to adversary-in-the-middle (AiTM) eavesdropping and packet injection on untrusted Wi-Fi networks.
 
 ### Advanced / Scenario-Based
-4. **Question**: You are auditing an Android application that implements root detection in native C code (`libsecurity.so`) rather than Java. Your standard Frida `Java.use()` hooks fail to bypass the check. How do you bypass native root detection?
+5. **Question**: You are auditing an Android application that implements root detection in native C code (`libsecurity.so`) rather than Java. Your standard Frida `Java.use()` hooks fail to bypass the check. How do you bypass native root detection?
    * *Answer*: Because native C code executes outside the Java ART runtime, `Java.use()` hooks have no effect. The auditor must use Frida's **`Interceptor` API** to hook native system calls exported by `libc.so` (such as `open`, `fopen`, `access`, and `stat`). When the native library queries file paths associated with root binaries (e.g., `/system/bin/su`, `/system/xbin/su`, `/sbin/su`, or Magisk binaries), the native Frida hook inspects the argument string. If a root-related path is detected, the hook modifies the return value to indicate the file does not exist (returning `-1` and setting `errno = 2` / `ENOENT`), successfully concealing the rooted environment from the native detection routine.
+6. **Question**: Explain why an auditor cannot immediately decompile an App Store `.ipa` binary in Ghidra or IDA Pro, and explain the exact technical procedure used to decrypt it.
+   * *Answer*: Applications distributed via the Apple App Store are encrypted using FairPlay DRM (`LC_ENCRYPTION_INFO_64` has `cryptid = 1`), encrypting the executable `__TEXT` segment with device-specific cryptographic keys. If opened in Ghidra or IDA, the code appears as unanalyzable ciphertext. To analyze it, the auditor runs the application on a physical jailbroken iOS test device. When launched, the iOS kernel and Secure Enclave decrypt the Mach-O binary into physical RAM. The auditor uses dynamic dumping utilities like `frida-ios-dump` or `bagbak` to attach to the live process, read the decrypted memory pages from the process address space, reconstruct the Mach-O binary structure, patch `cryptid` to `0`, and write the decrypted `.ipa` to the workstation for static reversing.
 
 ---
 
@@ -440,6 +591,11 @@ Advanced mobile applications inspect `/proc/self/maps` and `/proc/self/status` f
 * Connect to a rooted Android emulator with `frida-server` running.
 * Run `frida -U -f com.target.app -l bypass_pinning.js`.
 * Verify that certificate pinning is defeated and capture encrypted HTTPS traffic in Burp Suite.
+
+### Level 4: iOS Binary Decryption & Objection Runtime Auditing (Advanced)
+* Establish an SSH tunnel to a jailbroken iOS device via `iproxy 2222 22`.
+* Decrypt an App Store binary using `frida-ios-dump` and verify `cryptid 0` with `otool -l`.
+* Launch Objection (`objection -g "TargetApp" explore`) and execute `ios sslpinning disable` and `ios keychain dump`.
 
 ---
 

