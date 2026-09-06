@@ -20,7 +20,7 @@ By completing this module, network penetration testers, infrastructure security 
 ## 2. Prerequisites & Operational Requirements
 
 To successfully master the concepts and practical implementations in this module, engineers require:
-* **Networking & Lab Architectures**: Mastery of IP routing, virtual firewalls, and multi-tier network isolation ([Module 27](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_07_Network_Penetration_Testing/Module_27_Hands_on_Lab_Architecture.md)).
+* **Networking & Lab Architectures**: Mastery of IP routing, virtual firewalls, and multi-tier network isolation ([Module 27](Module_27_Hands_on_Lab_Architecture.md)).
 * **OS Administration**: Proficiency with Windows PowerShell commandlets (`Get-CimInstance`, `sc.exe`) and Linux shell utilities (`find`, `stat`, `ss`).
 * **Tooling Infrastructure**: Kali Linux workstation with `netexec`, `chisel`, `proxychains4`, `nmap`, and Python 3.8+.
 

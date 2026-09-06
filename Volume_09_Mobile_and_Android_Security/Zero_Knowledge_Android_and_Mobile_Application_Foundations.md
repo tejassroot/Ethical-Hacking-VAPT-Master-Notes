@@ -885,5 +885,5 @@ Reinforce your foundational understanding by completing these five non-destructi
 
 Now that you understand the first principles of smartphone hardware, the Android platform stack, the APK packaging model, the four core components, and basic auditing techniques, you are fully prepared to advance into the technical modules:
 
-* Advance to [Module 17: Mobile Security Foundations & Android OS Architecture](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_09_Mobile_and_Android_Security/Module_17_Mobile_Security_Foundations.md) to deconstruct low-level Binder IPC transactions, hardware-backed Keystore implementations, and SELinux policy enforcement.
-* Explore [Module 34: Android App VAPT & Reverse Engineering](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_09_Mobile_and_Android_Security/Module_34_Android_App_VAPT_and_Reverse_Engineering.md) to master dynamic hooking with Frida, traffic interception through Burp Suite, and bypassing certificate pinning.
+* Advance to [Module 17: Mobile Security Foundations & Android OS Architecture](Module_17_Mobile_Security_Foundations.md) to deconstruct low-level Binder IPC transactions, hardware-backed Keystore implementations, and SELinux policy enforcement.
+* Explore [Module 34: Android App VAPT & Reverse Engineering](Module_34_Android_App_VAPT_and_Reverse_Engineering.md) to master dynamic hooking with Frida, traffic interception through Burp Suite, and bypassing certificate pinning.

@@ -281,6 +281,6 @@ While ATT&CK documents adversary techniques, MITRE developed **D3FEND** as an on
 
 With mastery of the Cyber Kill Chain and the MITRE ATT&CK matrix:
 
-* **Operationalize Reconnaissance**: Explore [Module 06: Information Gathering & OSINT](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_03_Reconnaissance_OSINT_and_Enumeration/Module_06_Information_Gathering_and_Footprinting.md) to audit adversary reconnaissance techniques (`TA0043`).
-* **Audit System Defense & Persistence**: Continue to [Module 14: System Security & Host Defense](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_10_Malware_Wireless_IoT_and_Advanced_Security/Module_14_System_Security_and_Host_Defense.md) to evaluate Registry Run keys (`T1547`) and unquoted service paths (`T1543`).
-* **Execute Lateral Movement**: Advance to [Module 32: Network Penetration Testing Execution](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_07_Network_Penetration_Testing/Module_32_Network_Penetration_Testing_Execution.md) to audit Pass-the-Hash (`T1550`) and Kerberoasting (`T1558.003`).
+* **Operationalize Reconnaissance**: Explore [Module 06: Information Gathering & OSINT](../Volume_03_Reconnaissance_OSINT_and_Enumeration/Module_06_Information_Gathering_and_Footprinting.md) to audit adversary reconnaissance techniques (`TA0043`).
+* **Audit System Defense & Persistence**: Continue to [Module 14: System Security & Host Defense](../Volume_10_Malware_Wireless_IoT_and_Advanced_Security/Module_14_System_Security_and_Host_Defense.md) to evaluate Registry Run keys (`T1547`) and unquoted service paths (`T1543`).
+* **Execute Lateral Movement**: Advance to [Module 32: Network Penetration Testing Execution](../Volume_07_Network_Penetration_Testing/Module_32_Network_Penetration_Testing_Execution.md) to audit Pass-the-Hash (`T1550`) and Kerberoasting (`T1558.003`).

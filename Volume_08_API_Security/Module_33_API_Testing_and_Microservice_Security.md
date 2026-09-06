@@ -19,10 +19,10 @@ By completing this module, application security engineers, API penetration teste
 ## 2. Prerequisites & Operational Requirements
 
 To successfully master the concepts and practical implementations in this module, engineers require:
-* **API Architecture Foundations & Protocol Types**: Complete structural taxonomy of System APIs vs Web APIs, comparative analysis of REST, SOAP (WSDL/XXE), GraphQL (Introspection/DoS), gRPC (HTTP/2 Protobuf), WebSockets, Webhooks, and RPC protocols ([API Architectures, Protocols & Types Master Guide](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_08_API_Security/API_Architectures_and_Types_Master_Guide.md)).
-* **HTTP Protocol & Interception**: Proficiency with HTTP/1.1 and HTTP/2 semantics, headers, status codes, and Burp Suite Repeater ([Modules 21 & 29](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
+* **API Architecture Foundations & Protocol Types**: Complete structural taxonomy of System APIs vs Web APIs, comparative analysis of REST, SOAP (WSDL/XXE), GraphQL (Introspection/DoS), gRPC (HTTP/2 Protobuf), WebSockets, Webhooks, and RPC protocols ([API Architectures, Protocols & Types Master Guide](API_Architectures_and_Types_Master_Guide.md)).
+* **HTTP Protocol & Interception**: Proficiency with HTTP/1.1 and HTTP/2 semantics, headers, status codes, and Burp Suite Repeater ([Modules 21 & 29](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
 * **Data Serialization Literacy**: Understanding of JSON, YAML, Protocol Buffers, and relational/NoSQL schemas.
-* **Cryptography Foundations**: Working knowledge of asymmetric RSA public/private keypairs, symmetric HMAC-SHA256 digests, and PKI ([Module 24](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
+* **Cryptography Foundations**: Working knowledge of asymmetric RSA public/private keypairs, symmetric HMAC-SHA256 digests, and PKI ([Module 24](../Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
 
 ---
 

@@ -19,8 +19,8 @@ By completing this module, security practitioners, penetration testers, and OSIN
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Networking Primitives**: TCP and UDP transport protocols, IP subnetting (CIDR notation), and socket connections (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
-* **HTTP Fundamentals**: Client-server request structures, status codes, and HTTP headers (covered in [Module 21](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
+* **Networking Primitives**: TCP and UDP transport protocols, IP subnetting (CIDR notation), and socket connections (covered in [Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **HTTP Fundamentals**: Client-server request structures, status codes, and HTTP headers (covered in [Module 21](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
 * **Basic Command-Line Proficiency**: Utilizing standard Unix utilities (`curl`, `grep`, `jq`, `sed`, `awk`).
 
 ---

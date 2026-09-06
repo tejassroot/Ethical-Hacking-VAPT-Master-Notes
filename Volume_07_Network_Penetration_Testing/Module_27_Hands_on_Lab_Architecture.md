@@ -20,7 +20,7 @@ By completing this module, security practitioners, lab architects, and penetrati
 To successfully construct and operate the lab environments detailed in this module, engineers require:
 * **Hypervisor & Hardware Capabilities**: A host system with hardware virtualization (VT-x/AMD-V) enabled, minimum 16 GB RAM (32 GB recommended), and 150 GB free SSD storage.
 * **Virtualization Platforms**: Working installation of Oracle VirtualBox 7.x, VMware Workstation Pro, or Proxmox VE.
-* **Networking & OS Foundations**: Solid understanding of subnet masks, default gateways, VLAN tagging (802.1Q), and DNS/DHCP operation ([Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Networking & OS Foundations**: Solid understanding of subnet masks, default gateways, VLAN tagging (802.1Q), and DNS/DHCP operation ([Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
 
 ---
 

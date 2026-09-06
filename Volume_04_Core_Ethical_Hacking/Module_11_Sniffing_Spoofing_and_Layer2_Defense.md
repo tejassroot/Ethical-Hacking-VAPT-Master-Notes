@@ -19,7 +19,7 @@ By completing this module, security engineers, network penetration testers, and 
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Layer 2 / Layer 3 Protocol Anatomy**: Ethernet II frames, MAC addressing, IPv4/IPv6 headers, and ICMP messaging (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Layer 2 / Layer 3 Protocol Anatomy**: Ethernet II frames, MAC addressing, IPv4/IPv6 headers, and ICMP messaging (covered in [Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
 * **Linux Networking & Raw Sockets**: Socket options, network namespaces, and interface promiscuous mode configurations.
 
 ---

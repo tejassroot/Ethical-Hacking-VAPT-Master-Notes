@@ -18,7 +18,7 @@ By completing this module, professional security auditors, application security 
 ## 2. Prerequisites & Operational Requirements
 
 To successfully master the concepts and practical exercises in this module, engineers require:
-* **Networking & HTTP Protocols**: Deep familiarity with RFC 9112 (HTTP/1.1), RFC 9113 (HTTP/2), headers, status codes, and TLS handshakes (covered in [Module 21](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
+* **Networking & HTTP Protocols**: Deep familiarity with RFC 9112 (HTTP/1.1), RFC 9113 (HTTP/2), headers, status codes, and TLS handshakes (covered in [Module 21](Module_21_Web_Security_Foundations.md)).
 * **Local Proxy Configuration**: Proficiency in configuring browser proxy routing (FoxyProxy, OS network settings, SOCKS5 chains).
 * **Command-Line Tooling**: Working installations of `ffuf`, `httpx`, `curl`, and Python 3.8+ on Kali Linux or a hardened Debian-based testing environment.
 

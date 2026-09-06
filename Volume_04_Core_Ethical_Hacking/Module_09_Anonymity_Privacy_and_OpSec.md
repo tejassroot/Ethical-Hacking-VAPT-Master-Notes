@@ -19,8 +19,8 @@ By completing this module, security engineers, privacy researchers, and threat i
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Network Encapsulation & Routing**: IP routing, NAT, SOCKS proxies, and DNS resolution (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
-* **Applied Cryptography**: Symmetric stream ciphers, Diffie-Hellman key exchanges, and public-key digital signatures (covered in [Module 24](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
+* **Network Encapsulation & Routing**: IP routing, NAT, SOCKS proxies, and DNS resolution (covered in [Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Applied Cryptography**: Symmetric stream ciphers, Diffie-Hellman key exchanges, and public-key digital signatures (covered in [Module 24](../Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
 
 ---
 

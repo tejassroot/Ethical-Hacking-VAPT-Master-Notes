@@ -19,8 +19,8 @@ By completing this module, security practitioners, penetration testers, and netw
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **TCP/IP Transport State Machines**: 3-way handshakes, SYN vs. Connect scans, and socket communication (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
-* **Operating System Primitives**: Windows/Linux user accounts, Security Identifiers (SIDs), and file system permissions (covered in [Module 05](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_05_Linux_Architecture_and_Administration.md)).
+* **TCP/IP Transport State Machines**: 3-way handshakes, SYN vs. Connect scans, and socket communication (covered in [Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Operating System Primitives**: Windows/Linux user accounts, Security Identifiers (SIDs), and file system permissions (covered in [Module 05](../Volume_02_Linux_Networking_and_Security_Foundations/Module_05_Linux_Architecture_and_Administration.md)).
 * **Network Client Utilities**: `nc`, `nmap`, `curl`, and basic Python network socket scripting.
 
 ---

@@ -19,8 +19,8 @@ By completing this module, security engineers, penetration testers, and network 
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Networking Foundations & Subnetting**: Network topologies, hardware devices (switches/routers), IPv4/IPv6 address types, CIDR prefix table, subnetting calculations, and VLSM ([Computer Networking Foundations & Subnetting Master Guide](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)).
-* **Binary, Hexadecimal, and Byte Representation**: Bitwise masks, big-endian (network byte order) vs. little-endian representations (covered in [Module 01](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md)).
+* **Networking Foundations & Subnetting**: Network topologies, hardware devices (switches/routers), IPv4/IPv6 address types, CIDR prefix table, subnetting calculations, and VLSM ([Computer Networking Foundations & Subnetting Master Guide](Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)).
+* **Binary, Hexadecimal, and Byte Representation**: Bitwise masks, big-endian (network byte order) vs. little-endian representations (covered in [Module 01](../Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md)).
 * **Linux Shell & Sockets**: Basic Linux networking utilities (`ip`, `ss`, `netstat`, `ping`) and socket permissions (`CAP_NET_RAW`).
 
 ---

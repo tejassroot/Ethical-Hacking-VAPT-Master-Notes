@@ -19,8 +19,8 @@ By completing this module, application security engineers, web penetration teste
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **TCP/IP Transport & DNS Resolution**: Handshake mechanisms, port 80/443 mapping, and DNS lookups (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
-* **Applied Cryptography Primitives**: Asymmetric key pairs, symmetric block ciphers, and digital signatures (covered in [Module 24](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
+* **TCP/IP Transport & DNS Resolution**: Handshake mechanisms, port 80/443 mapping, and DNS lookups (covered in [Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Applied Cryptography Primitives**: Asymmetric key pairs, symmetric block ciphers, and digital signatures (covered in [Module 24](../Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
 * **Basic Web Technologies**: HTML5 markup, CSS stylesheets, and JavaScript DOM manipulation.
 
 ---

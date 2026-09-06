@@ -18,7 +18,7 @@ By completing this module, security practitioners, lead penetration testers, and
 ## 2. Prerequisites & Operational Requirements
 
 To successfully master the concepts and practical exercises in this module, engineers require:
-* **Vulnerability & Architecture Knowledge**: Deep understanding of OWASP Top 10 vulnerabilities, root cause analysis, and browser/server communication ([Module 30](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md)).
+* **Vulnerability & Architecture Knowledge**: Deep understanding of OWASP Top 10 vulnerabilities, root cause analysis, and browser/server communication ([Module 30](Module_30_OWASP_Top_10_Deep_Dive.md)).
 * **Risk Quantification Literacy**: Familiarity with mathematical scoring metrics, probability distributions, and business impact modeling.
 * **Scripting Tools**: Python 3.8+ with standard libraries (`math`, `re`, `json`) for executing local CVSS calculators and document compilers.
 

@@ -40,8 +40,8 @@ Last Updated: 2026-09-05
 
 Before reading this guide, ensure you understand:
 
-- **Computer fundamentals**: [Zero_Knowledge_Computer_Foundations_Master_Guide.md](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_01_Computer_and_Programming_Foundations/Zero_Knowledge_Computer_Foundations_Master_Guide.md)
-- **Networking basics (IP, TCP/UDP)**: [Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)
+- **Computer fundamentals**: [Zero_Knowledge_Computer_Foundations_Master_Guide.md](Zero_Knowledge_Computer_Foundations_Master_Guide.md)
+- **Networking basics (IP, TCP/UDP)**: [Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md](../Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)
 
 ---
 
@@ -869,11 +869,11 @@ sessionStorage.getItem('user')
 
 | Vulnerability | Description | Relevant Module |
 |---------------|-------------|-----------------|
-| **XSS (Cross-Site Scripting)** | Injecting JavaScript into pages viewed by other users | [Module_21](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md) |
-| **SQL Injection** | Injecting SQL commands into database queries | [Module_30](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) |
-| **IDOR** | Accessing objects belonging to other users by changing IDs | [Module_30](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) |
-| **CSRF** | Tricking an authenticated user's browser into making unwanted requests | [Module_21](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md) |
-| **SSRF** | Making the server fetch internal/external URLs on attacker's behalf | [Module_30](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) |
+| **XSS (Cross-Site Scripting)** | Injecting JavaScript into pages viewed by other users | [Module_21](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md) |
+| **SQL Injection** | Injecting SQL commands into database queries | [Module_30](../Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) |
+| **IDOR** | Accessing objects belonging to other users by changing IDs | [Module_30](../Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) |
+| **CSRF** | Tricking an authenticated user's browser into making unwanted requests | [Module_21](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md) |
+| **SSRF** | Making the server fetch internal/external URLs on attacker's behalf | [Module_30](../Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) |
 
 **Quick CSRF explanation:** CSRF exploits the fact that browsers automatically attach cookies to requests. If a malicious page makes a POST request to `bank.com/transfer`, the victim's browser will include their `bank.com` session cookie. CORS and SameSite cookies are the main defenses.
 
@@ -1130,5 +1130,5 @@ You now understand the complete lifecycle of a web request:
 
 With a solid understanding of HTTP and web fundamentals, advance to:
 
-- **Web Security Foundations**: [Module_21_Web_Security_Foundations.md](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md) — hands-on web application security techniques
-- **OWASP Top 10 Deep Dive**: [Module_30_OWASP_Top_10_Deep_Dive.md](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) — the most critical web vulnerabilities with exploitation techniques
+- **Web Security Foundations**: [Module_21_Web_Security_Foundations.md](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md) — hands-on web application security techniques
+- **OWASP Top 10 Deep Dive**: [Module_30_OWASP_Top_10_Deep_Dive.md](../Volume_06_Web_Application_VAPT/Module_30_OWASP_Top_10_Deep_Dive.md) — the most critical web vulnerabilities with exploitation techniques

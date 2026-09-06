@@ -18,7 +18,7 @@ By completing this module, network penetration testers, infrastructure security 
 ## 2. Prerequisites & Operational Requirements
 
 To master the concepts and practical implementations in this module, engineers require:
-* **Networking Foundations**: Deep understanding of IPv4/IPv6 addressing, subnetting, TCP three-way handshakes, ICMP messages, and Layer 2 ARP/VLAN structures ([Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Networking Foundations**: Deep understanding of IPv4/IPv6 addressing, subnetting, TCP three-way handshakes, ICMP messages, and Layer 2 ARP/VLAN structures ([Module 08](../Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
 * **Network Interception & Diagnostics**: Familiarity with packet capturing tools (`tcpdump`, Wireshark) and scanning utilities (`nmap`, `masscan`).
 * **Systems Administration**: Working knowledge of Linux and Windows networking configurations, firewall rules, and service architectures.
 

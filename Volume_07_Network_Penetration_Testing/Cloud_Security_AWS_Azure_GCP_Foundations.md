@@ -48,10 +48,10 @@ Last Updated: 2026-09-05
 Before reading this module, ensure you are comfortable with:
 
 - **Networking fundamentals** — IP addressing, subnetting, routing, and TCP/IP:
-  [Networking Foundations — IP Addressing and Subnetting Master Guide](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)
+  [Networking Foundations — IP Addressing and Subnetting Master Guide](../Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)
 
 - **Penetration testing methodology** — scoping, rules of engagement, reporting:
-  [Module 26 — Penetration Testing Fundamentals](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_07_Network_Penetration_Testing/Module_26_Penetration_Testing_Fundamentals.md)
+  [Module 26 — Penetration Testing Fundamentals](Module_26_Penetration_Testing_Fundamentals.md)
 
 ---
 
@@ -1396,8 +1396,8 @@ After mastering cloud security foundations, explore:
 - **Cloud DFIR** — Incident Response in AWS using CloudTrail, VPC flow logs, and GuardDuty findings
 
 **Related Modules in this Repository**:
-- [Networking Foundations](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)
-- [Penetration Testing Fundamentals](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_07_Network_Penetration_Testing/Module_26_Penetration_Testing_Fundamentals.md)
+- [Networking Foundations](../Volume_02_Linux_Networking_and_Security_Foundations/Networking_Foundations_IP_Addressing_and_Subnetting_Master_Guide.md)
+- [Penetration Testing Fundamentals](Module_26_Penetration_Testing_Fundamentals.md)
 
 ---
 

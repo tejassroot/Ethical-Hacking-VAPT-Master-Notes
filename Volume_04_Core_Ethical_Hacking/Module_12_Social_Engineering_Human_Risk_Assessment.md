@@ -18,8 +18,8 @@ By completing this module, security practitioners, red team operators, and human
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Email Transmission Protocols**: SMTP architecture, MIME formatting, and DNS MX/TXT records (covered in [Module 19](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_10_Malware_Wireless_IoT_and_Advanced_Security/Module_19_Email_Security_Protocols_Header_Forensics.md)).
-* **Web Authentication Frameworks**: Session cookies, OAuth2 tokens, and Multi-Factor Authentication (covered in [Module 10](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_04_Core_Ethical_Hacking/Module_10_Password_Security_and_Credential_Auditing.md)).
+* **Email Transmission Protocols**: SMTP architecture, MIME formatting, and DNS MX/TXT records (covered in [Module 19](../Volume_10_Malware_Wireless_IoT_and_Advanced_Security/Module_19_Email_Security_Protocols_Header_Forensics.md)).
+* **Web Authentication Frameworks**: Session cookies, OAuth2 tokens, and Multi-Factor Authentication (covered in [Module 10](Module_10_Password_Security_and_Credential_Auditing.md)).
 
 ---
 

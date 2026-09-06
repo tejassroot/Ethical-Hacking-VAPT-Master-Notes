@@ -19,8 +19,8 @@ By completing this module, security practitioners, penetration testers, and secu
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Operating System Primitives**: Kernel space vs. user space ring transitions (Ring 0 vs. Ring 3), virtual memory paging, and MMU functionality (covered in [Module 01](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md)).
-* **Basic IP Networking**: IPv4 subnetting, MAC addressing, CIDR notations, and standard gateway routing (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **Operating System Primitives**: Kernel space vs. user space ring transitions (Ring 0 vs. Ring 3), virtual memory paging, and MMU functionality (covered in [Module 01](../Volume_01_Computer_and_Programming_Foundations/Module_01_Computer_Hardware_OS_and_Productivity.md)).
+* **Basic IP Networking**: IPv4 subnetting, MAC addressing, CIDR notations, and standard gateway routing (covered in [Module 08](Module_08_Networking_Protocols_and_Security.md)).
 * **Linux Shell Proficiency**: Basic navigation, standard package management (`apt`/`dnf`), and administrative privilege elevation (`sudo`).
 
 ---

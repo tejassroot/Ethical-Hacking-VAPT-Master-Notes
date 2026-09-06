@@ -19,8 +19,8 @@ By completing this module, application security engineers, penetration testers, 
 ## 2. Prerequisites & Operational Requirements
 
 To master the concepts in this module, engineers require:
-* **HTTP & Session Foundations**: Mastery of HTTP status codes, headers, cookie flags (`Secure`, `HttpOnly`, `SameSite`), and CORS policies ([Module 21](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
-* **Interception Tooling**: Operational proficiency with Burp Suite Professional, OWASP ZAP, and `ffuf` ([Module 29](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_29_Web_Application_Security_Tools.md)).
+* **HTTP & Session Foundations**: Mastery of HTTP status codes, headers, cookie flags (`Secure`, `HttpOnly`, `SameSite`), and CORS policies ([Module 21](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
+* **Interception Tooling**: Operational proficiency with Burp Suite Professional, OWASP ZAP, and `ffuf` ([Module 29](../Volume_05_Web_Security_Foundations/Module_29_Web_Application_Security_Tools.md)).
 * **Database & Architecture Literacy**: Understanding of relational databases (SQL execution plans), modern RESTful APIs, and cloud infrastructure metadata services.
 
 ---

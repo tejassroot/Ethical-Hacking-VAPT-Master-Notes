@@ -19,8 +19,8 @@ By completing this module, security engineers, penetration testers, and identity
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **Cryptographic Hash Functions**: One-way property, collision resistance, and avalanche effect (covered in [Module 24](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
-* **Operating System User Backends**: Linux `/etc/shadow` format and Windows SAM/NTDS database architectures (covered in [Module 05](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_05_Linux_Architecture_and_Administration.md)).
+* **Cryptographic Hash Functions**: One-way property, collision resistance, and avalanche effect (covered in [Module 24](../Volume_02_Linux_Networking_and_Security_Foundations/Module_24_Applied_Cryptography_and_PKI.md)).
+* **Operating System User Backends**: Linux `/etc/shadow` format and Windows SAM/NTDS database architectures (covered in [Module 05](../Volume_02_Linux_Networking_and_Security_Foundations/Module_05_Linux_Architecture_and_Administration.md)).
 
 ---
 

@@ -19,7 +19,7 @@ By completing this module, security practitioners, penetration testers, and cryp
 
 Before studying this module, ensure familiarity with:
 * **Discrete Mathematics & Binary Primitives**: Bitwise XOR ($\oplus$), modular arithmetic ($\pmod n$), and greatest common divisors.
-* **TCP/IP Sockets**: Transport-layer connection lifecycles and byte streams (covered in [Module 08](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_08_Networking_Protocols_and_Security.md)).
+* **TCP/IP Sockets**: Transport-layer connection lifecycles and byte streams (covered in [Module 08](Module_08_Networking_Protocols_and_Security.md)).
 * **Basic Python Scripting**: Byte manipulation, standard binary encoding (`base64`, `hex`), and the `hashlib` library.
 
 ---

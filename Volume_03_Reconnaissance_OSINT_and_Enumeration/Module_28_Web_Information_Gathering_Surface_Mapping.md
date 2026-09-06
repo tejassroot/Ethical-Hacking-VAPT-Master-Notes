@@ -19,8 +19,8 @@ By completing this module, security researchers, application security auditors, 
 ## 2. Prerequisites & Technical Foundations
 
 Before studying this module, ensure familiarity with:
-* **HTTP/HTTPS Protocol Mechanics**: Request/response headers, status codes, and methods (covered in [Module 21](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
-* **DNS Resolution & Record Types**: A, CNAME, and TXT records (covered in [Module 06](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_03_Reconnaissance_OSINT_and_Enumeration/Module_06_Information_Gathering_and_Footprinting.md)).
+* **HTTP/HTTPS Protocol Mechanics**: Request/response headers, status codes, and methods (covered in [Module 21](../Volume_05_Web_Security_Foundations/Module_21_Web_Security_Foundations.md)).
+* **DNS Resolution & Record Types**: A, CNAME, and TXT records (covered in [Module 06](Module_06_Information_Gathering_and_Footprinting.md)).
 * **Basic Client-Side Web Architecture**: HTML DOM, JavaScript bundling (Webpack, Vite), and Single Page Applications (SPAs).
 
 ---

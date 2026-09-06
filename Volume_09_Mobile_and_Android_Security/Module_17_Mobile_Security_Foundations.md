@@ -18,8 +18,8 @@ By completing this module, mobile security practitioners, reverse engineers, and
 ## 2. Prerequisites & Operational Requirements
 
 To successfully master the concepts and practical exercises in this module, engineers require:
-* **Mobile & Android Zero-Knowledge Foundations**: Core smartphone SoC architecture, AOSP ecosystem, APK ZIP structure, Dalvik/ART execution, the four components (Activity, Service, Receiver, Provider), Intent communication, and essential ADB commands ([Zero-Knowledge Android Foundations Primer](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_09_Mobile_and_Android_Security/Zero_Knowledge_Android_and_Mobile_Application_Foundations.md)).
-* **Operating System Foundations**: Understanding of Linux processes, file permissions, UIDs/GIDs, and system calls ([Module 05](file:///home/kali/Ethical_Hacking_VAPT_Master_Notes/Volume_02_Linux_Networking_and_Security_Foundations/Module_05_Linux_Architecture_and_Administration.md)).
+* **Mobile & Android Zero-Knowledge Foundations**: Core smartphone SoC architecture, AOSP ecosystem, APK ZIP structure, Dalvik/ART execution, the four components (Activity, Service, Receiver, Provider), Intent communication, and essential ADB commands ([Zero-Knowledge Android Foundations Primer](Zero_Knowledge_Android_and_Mobile_Application_Foundations.md)).
+* **Operating System Foundations**: Understanding of Linux processes, file permissions, UIDs/GIDs, and system calls ([Module 05](../Volume_02_Linux_Networking_and_Security_Foundations/Module_05_Linux_Architecture_and_Administration.md)).
 * **Programming Literacy**: Familiarity with Java or Kotlin application structures and XML syntax.
 * **Tooling Setup**: Android Debug Bridge (`adb`), Android SDK platform-tools, an Android Virtual Device (AVD) running Android 11+ (API 30+), and Python 3.8+.
 
